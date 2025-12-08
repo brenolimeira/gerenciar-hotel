@@ -1,23 +1,46 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# --- DEPENDÊNCIAS ---
+node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# --- BUILD ---
+dist/
+build/
 
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
+# --- AMBIENTE ---
+.env
 .env.development.local
-.env.test.local
 .env.production.local
+.env.test.local
+.env.local
 
+# --- CACHE ---
+.cache/
+.vite/
+coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+
+# --- EDITOR / IDE ---
+.vscode/
+.idea/
+
+# --- SO / TEMP ---
+.DS_Store
+Thumbs.db
+*.log
+
+# --- IMAGENS E ARTEFATOS GERADOS ---
+*.png.tmp
+*.jpg.tmp
+
+# --- ANTD / LESS CACHE (se usar custom theme) ---
+.ant-design-cache/
+
+# --- STORYBOOK (se usar) ---
+storybook-static/
+
+# --- TESTES ---
+jest-cache/
+jest-results.json

@@ -1,0 +1,38 @@
+[
+  {
+    "nome": "João da Silva",
+    "quarto": 101,
+    "endereco": {
+      "rua": "Rua das Flores",
+      "numero": 123,
+      "bairro": "Centro",
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "cep": "01000-000"
+    }
+  },
+  {
+    "nome": "Maria Oliveira",
+    "quarto": 102,
+    "endereco": {
+      "rua": "Avenida Brasil",
+      "numero": 450,
+      "bairro": "Jardim Europa",
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
+      "cep": "22000-100"
+    }
+  },
+  {
+    "nome": "Carlos Pereira",
+    "quarto": 201,
+    "endereco": {
+      "rua": "Rua Monte Azul",
+      "numero": 87,
+      "bairro": "Vila Nova",
+      "cidade": "Curitiba",
+      "estado": "PR",
+      "cep": "80000-250"
+    }
+  }
+]

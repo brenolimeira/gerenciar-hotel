@@ -1,0 +1,22 @@
+[
+  {
+    "numero": 101,
+    "quantidade_pessoas": 2,
+    "ocupado": true
+  },
+  {
+    "numero": 102,
+    "quantidade_pessoas": 3,
+    "ocupado": true
+  },
+  {
+    "numero": 103,
+    "quantidade_pessoas": 1,
+    "ocupado": false
+  },
+  {
+    "numero": 201,
+    "quantidade_pessoas": 4,
+    "ocupado": true
+  }
+]
