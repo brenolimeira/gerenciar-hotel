@@ -11,7 +11,7 @@ const { Content } = Layout;
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
 
   const { colors } = useTheme();

@@ -1,4 +1,4 @@
-import { Button, Flex, Layout, theme } from 'antd';
+import { Button, Flex, Layout } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import ThemeSwitcher from './ThemeSwitcher';
 import { useTheme } from '../context/useTheme';

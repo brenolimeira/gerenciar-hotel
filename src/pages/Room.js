@@ -1,18 +1,61 @@
 import { useParams } from 'react-router-dom';
-import rooms from '../mock/quartos.json';
-import guests from '../mock/guest.json';
-import { Table, Tag, Empty } from 'antd'
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, ConfigProvider } from 'antd'
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { createStyles } from 'antd-style';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs';
+
+const useStyle = createStyles(({ prefixCls, css }) => ({
+    linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      > span {
+        position: relative;
+      }
+
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #191E26, #3E4C59);
+        position: absolute;
+        inset: -1px;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
+    }
+  `,
+}));
 
 export default function Room() {
 
     const { number } = useParams();
-    const room = rooms.find(q => q.numero == number);
-    const guest = guests.find(g => g.quarto == number);
+
+    const [booking, setBooking] = useState();
+    const [guests, setGuests] = useState([]);
+    const { styles } = useStyle();
+
+    useEffect(() => {
+        axios.get(`http://127.0.0.1:8000/api/bookings/room/${number}/`)
+            .then(res => {
+                setBooking(res.data);
+            })
+            .catch(err => console.error(err));
+    }, [number]);
+
+    useEffect(() => {
+        if (booking) {
+            booking.forEach(booki => {
+                setGuests(booki.guest)
+            });
+        }
+    }, [booking])
 
     const expandColumns = [
-        { title: 'Nome', dataIndex: 'name', key: 'name' },
-        { title: 'Endereço', dataIndex: 'address', key: 'address' },
+        { title: 'Nome do Hóspede', dataIndex: 'name', key: 'name' },
     ]
 
     const columns = [
@@ -29,64 +72,90 @@ export default function Room() {
                 );
             }
         },
+        {
+            title: 'Check in',
+            dataIndex: 'check_in',
+            key: 'check_in',
+            render: (date) => dayjs(date).format("DD/MM/YYYY")
+        },
+        {
+            title: 'Check out',
+            dataIndex: 'check_out',
+            key: 'check_out',
+            render: (date) => {
+                if (date) {
+                    return dayjs(date).format("DD/MM/YYYY")
+                } else {
+                    return ""
+                }
+            }
+        },
     ];
 
     const expandedRowRender = () => {
-
-
-        if (!guest) {
-            return (
-                <Empty 
-                    image={<CloseCircleOutlined style={{
-                        fontSize: 48,
-                    }}/>}
-                    style={{
-                        margin: 4,
-                        padding: 0
-                    }}
-                    description={
-                        <span style={{ fontSize: 14 }}>
-                            Nenhum hóspede está ocupando este quarto
-                        </span>
-                    }
-                />
-            );
-        }
-
         return (
             <Table
                 columns={expandColumns}
-                dataSource={guest ? [{
-                    key: 1,
-                    name: guest.nome,
-                    address: `${guest.endereco.rua}, ${guest.endereco.numero}`
-                }] : []}
+                dataSource={guests.map(guest => ({
+                    key: guest.id,
+                    name: guest.name
+                }))}
                 pagination={false}
             />
         );
     }
 
-    if (!room) return <h2>Quarto não encontrado!</h2>;
+    if (!booking) return <h2>Nenhuam Hospedagem encontrada!</h2>;
 
     return (
         <>
-            <Table
-                columns={columns}
-                expandable={{ 
-                    expandedRowRender, 
-                    defaultExpandAllRows: true
-                    //defaultExpandedRowKeys: [String(room.numero)] 
-                }}
-                dataSource={[{
-                    key: room.numero,
-                    number: room.numero,
-                    guest: room.quantidade_pessoas,
-                    status: room.ocupado ? "Ocupado" : "Livre",
-                    ocupado: room.ocupado
-                }]}
-                size='middle'
-                pagination={false}
-            />
+            {booking.length !== 0 ? booking.map(booki => {
+                return (
+                    <Table
+                        columns={columns}
+                        expandable={{
+                            expandedRowRender,
+                            defaultExpandAllRows: true
+                            //defaultExpandedRowKeys: [String(room.numero)] 
+                        }}
+                        dataSource={[{
+                            key: booki.id,
+                            number: booki.room.name,
+                            guest: booki.room.guest_capacity,
+                            status: booki.status === 'active' ? "Ocupado" : "Livre",
+                            ocupado: () => {
+                                if (booki.status === 'active') {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            },
+                            name: booki.guest.name,
+                            check_in: booki.check_in,
+                            check_out: booki.check_out
+                        }]}
+                        size='middle'
+                        pagination={false}
+                    />
+                );
+            }) : (
+                <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50vh", // ou 100vh se quiser no meio da tela
+                }}>
+                    <ConfigProvider
+                        button={{
+                            className: styles.linearGradientButton
+                        }}
+                    >
+                        <Button type='primary' size='large' icon={<PlusCircleOutlined />}>
+                            Criar Hospedagem
+                        </Button>
+                    </ConfigProvider>
+                </div>
+            )}
         </>
     );
 }

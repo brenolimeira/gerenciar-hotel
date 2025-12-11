@@ -41,7 +41,7 @@ function SideBar({ collapsed }) {
                         icon: <TabletOutlined style={{ color: colors.text }} />,
                         label: (
                             <NavLink to="/" style={{ color: colors.text }}>
-                                Quartos
+                                Hospedagem
                             </NavLink>
                         )
                     },
