@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { Table, Tag, Button, ConfigProvider } from 'antd'
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { CheckOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
+
+import { Space } from 'antd';
 
 const useStyle = createStyles(({ prefixCls, css }) => ({
     linearGradientButton: css`
@@ -111,32 +113,43 @@ export default function Room() {
         <>
             {booking.length !== 0 ? booking.map(booki => {
                 return (
-                    <Table
-                        columns={columns}
-                        expandable={{
-                            expandedRowRender,
-                            defaultExpandAllRows: true
-                            //defaultExpandedRowKeys: [String(room.numero)] 
-                        }}
-                        dataSource={[{
-                            key: booki.id,
-                            number: booki.room.name,
-                            guest: booki.room.guest_capacity,
-                            status: booki.status === 'active' ? "Ocupado" : "Livre",
-                            ocupado: () => {
-                                if (booki.status === 'active') {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            },
-                            name: booki.guest.name,
-                            check_in: booki.check_in,
-                            check_out: booki.check_out
-                        }]}
-                        size='middle'
-                        pagination={false}
-                    />
+                    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                        <Table
+                            columns={columns}
+                            expandable={{
+                                expandedRowRender,
+                                defaultExpandAllRows: true
+                                //defaultExpandedRowKeys: [String(room.numero)] 
+                            }}
+                            dataSource={[{
+                                key: booki.id,
+                                number: booki.room.name,
+                                guest: guests.length,
+                                status: booki.status === 'active' ? "Ocupado" : "Livre",
+                                ocupado: () => {
+                                    if (booki.status === 'active') {
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
+                                },
+                                name: booki.guest.name,
+                                check_in: booki.check_in,
+                                check_out: booki.check_out
+                            }]}
+                            size='middle'
+                            pagination={false}
+                        />
+                        <ConfigProvider
+                            button={{
+                                className: styles.linearGradientButton
+                            }}
+                        >
+                            <Button type='primary' size='large' icon={<CheckOutlined />}>
+                                Realizar Check out
+                            </Button>
+                        </ConfigProvider>
+                    </Space>
                 );
             }) : (
                 <div style={{
