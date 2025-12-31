@@ -10,6 +10,7 @@ const { Content } = Layout;
 
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
+
   const {
     token: { borderRadiusLG },
   } = theme.useToken();

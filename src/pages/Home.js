@@ -43,6 +43,7 @@ function Home() {
                             <p>Capacidade de Hóspedes : {room.current_guests} / {room.guest_capacity}</p>
                             {room.air_conditioning ? <p>Ar Condicionado</p> : []}
                             {room.crib ? <p>Berço</p> : []}
+                            {room.fan ? <p>Ventilador</p> : []}
                             <p>Camas de Casal: {room.double_beds}</p>
                             <p>Camas de Solteiro: {room.single_beds}</p>
                         </Card>
