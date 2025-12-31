@@ -4,10 +4,8 @@ import {
     SettingOutlined,
     TabletOutlined,
 } from '@ant-design/icons';
-import { useState } from 'react';
 import { useTheme } from '../context/useTheme';
 import { NavLink } from 'react-router-dom';
-import DrawerManagerRooms from './DrawerManagerRooms';
 
 
 const { Sider } = Layout;
@@ -16,19 +14,6 @@ function SideBar({ collapsed }) {
 
     const { colors, theme } = useTheme();
     const isDark = theme === "dark";
-
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [drawerType, setDrawerType] = useState(null);
-
-    const openDrawer = (type) => {
-        setDrawerType(type);
-        setDrawerOpen(true);
-    };
-
-    const closeDrawer = () => {
-        setDrawerOpen(false);
-        setDrawerType(null);
-    };
 
     return (
         <>
@@ -41,7 +26,7 @@ function SideBar({ collapsed }) {
                     overflow: 'auto',
                     background: colors.sider,
                 }}
-            >
+            >   
                 <div className="demo-logo-vertical" />
                 <Menu
                     theme={isDark ? 'dark' : 'light'}
@@ -51,11 +36,6 @@ function SideBar({ collapsed }) {
                         marginTop: '50px',
                         background: colors.sider,
                         color: colors.text,
-                    }}
-                    onClick={({ key }) => {
-                        if (key === 'create') openDrawer('create');
-                        // if (key === 'edit') openDrawer('edit');
-                        // if (key === 'remove') openDrawer('remove');
                     }}
                     items={[
                         {
@@ -70,23 +50,16 @@ function SideBar({ collapsed }) {
                         {
                             key: 'rooms',
                             icon: <SettingOutlined style={{ color: colors.text }} />,
-                            label: "Gerenciar Quartos",
-                            children: [
-                                { key: 'create', label: 'Cadastrar' },
-                                {
-                                    key: 'edit', label: (
-                                        <NavLink to="/room/edit" style={{ color: colors.text }}>
-                                            Editar/Remover
-                                        </NavLink>
-                                    )
-                                },
-                            ]
+                            label: (
+                                <NavLink to="/room/edit" style={{ color: colors.text }}>
+                                    Gerenciar Quartos
+                                </NavLink>
+                            ),
                         },
 
                     ]}
                 />
             </Sider>
-            <DrawerManagerRooms drawerOpen={drawerOpen} drawerType={drawerType} closeDrawer={closeDrawer} />
         </>
     );
 }

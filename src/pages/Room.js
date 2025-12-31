@@ -1,36 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { Table, Tag, Button, ConfigProvider } from 'antd'
 import { CheckOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { createStyles } from 'antd-style';
+import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
 import { Space } from 'antd';
-
-const useStyle = createStyles(({ prefixCls, css }) => ({
-    linearGradientButton: css`
-    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
-      > span {
-        position: relative;
-      }
-
-      &::before {
-        content: '';
-        background: linear-gradient(135deg, #191E26, #3E4C59);
-        position: absolute;
-        inset: -1px;
-        opacity: 1;
-        transition: all 0.3s;
-        border-radius: inherit;
-      }
-
-      &:hover::before {
-        opacity: 0;
-      }
-    }
-  `,
-}));
 
 export default function Room() {
 
@@ -38,7 +14,7 @@ export default function Room() {
 
     const [booking, setBooking] = useState();
     const [guests, setGuests] = useState([]);
-    const { styles } = useStyle();
+    const { styles } = useButtonStyles();
 
     useEffect(() => {
         axios.get(`http://127.0.0.1:8000/api/bookings/room/${number}/`)
