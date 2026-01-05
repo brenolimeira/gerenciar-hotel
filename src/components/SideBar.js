@@ -3,6 +3,7 @@ import { Menu, Layout } from 'antd';
 import {
     SettingOutlined,
     TabletOutlined,
+    TeamOutlined,
 } from '@ant-design/icons';
 import { useTheme } from '../context/useTheme';
 import { NavLink } from 'react-router-dom';
@@ -22,8 +23,6 @@ function SideBar({ collapsed }) {
                 collapsible
                 collapsed={collapsed}
                 style={{
-                    height: '100vh',
-                    overflow: 'auto',
                     background: colors.sider,
                 }}
             >   
@@ -53,6 +52,15 @@ function SideBar({ collapsed }) {
                             label: (
                                 <NavLink to="/room/edit" style={{ color: colors.text }}>
                                     Gerenciar Quartos
+                                </NavLink>
+                            ),
+                        },
+                        {
+                            key: 'guests',
+                            icon: <TeamOutlined  style={{ color: colors.text }} />,
+                            label: (
+                                <NavLink to="/guests" style={{ color: colors.text }}>
+                                    Hóspedes
                                 </NavLink>
                             ),
                         },

@@ -132,7 +132,7 @@ export default function Room() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    height: "50vh", // ou 100vh se quiser no meio da tela
+                    height: "50vh", 
                 }}>
                     <ConfigProvider
                         button={{

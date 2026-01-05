@@ -44,6 +44,7 @@ export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer
     const handleBack = () => {
         setSelectedRoom(null);
         forms.resetFields();
+        closeDrawer();
     };
 
     const onFinish = (values) => {

@@ -19,7 +19,7 @@ const App = () => {
 
   return (
     <Router>
-      <Layout style={{ background: colors.background }}>
+      <Layout style={{ background: colors.background, minHeight: '100vh' }}>
         <SideBar collapsed={collapsed} />
         <Layout style={{ background: colors.background }}>
           <SideHeader
