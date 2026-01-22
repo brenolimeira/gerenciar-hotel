@@ -1,9 +1,14 @@
-import { Card, Flex, Typography, Tag } from 'antd';
+import { Card, Flex, Typography, Tag, Button } from 'antd';
 import { NavLink } from 'react-router-dom';
 import axios from "axios";
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import BookingDrawer from '../components/BookingDrawer';
 
 function Home() {
+
+    const [open, setOpen] = useState(false);
+    const [selectedRoomId, setSelectedRoomId] = useState(null);
 
     const { data: rooms = [] } = useQuery({
         queryKey: ['rooms'],
@@ -13,29 +18,45 @@ function Home() {
         }
     });
 
+    const openDrawer = (roomId) => {
+        setSelectedRoomId(roomId);
+        setOpen(true);
+    };
+
+    const closeDrawer = () => {
+        setOpen(false);
+        setSelectedRoomId(null);
+    };
+
+
     return (
-        <Flex
-            gap={16}
-            wrap="wrap"
-            align="flex-start"
-        >
-            {rooms ? rooms.map((room, index) => {
-                return (
-                    <NavLink
-                        key={room.id}
-                        to={`/room/${room.id}`}
-                        style={{ textDecoration: "none" }}
-                    >
+        <>
+            <Flex
+                gap={16}
+                wrap="wrap"
+                align="flex-start"
+            >
+                {rooms ? rooms.map((room, index) => {
+                    return (
+
                         <Card key={room.id}
                             title={
-                                <Typography.Title level={3}>
-                                    <Flex gap={24} align='center' justify='space-between'>
-                                        {room.name}
-                                        <Tag color={room.occupied ? "#A30000" : '#0A7500'} style={{ maxHeight: '3vh' }}>
-                                            {room.occupied ? "Ocupado" : "Livre"}
-                                        </Tag>
-                                    </Flex>
-                                </Typography.Title>
+                                <Flex gap={24} align="center" justify="space-between">
+                                    <NavLink
+                                        key={room.id}
+                                        to={`/room/${room.id}`}
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <Typography.Title level={3}>
+                                            <Flex gap={24} align='center' justify='space-between'>
+                                                {room.name}
+                                                <Tag color={room.occupied ? "#A30000" : '#0A7500'} style={{ maxHeight: '3vh' }}>
+                                                    {room.occupied ? "Ocupado" : "Livre"}
+                                                </Tag>
+                                            </Flex>
+                                        </Typography.Title>
+                                    </NavLink>
+                                </Flex>
                             }
                             variant="borderless"
                             style={{ width: 300, height: '30vh' }}
@@ -46,11 +67,23 @@ function Home() {
                             {room.fan ? <p>Ventilador</p> : []}
                             <p>Camas de Casal: {room.double_beds}</p>
                             <p>Camas de Solteiro: {room.single_beds}</p>
+                            <Button
+                                type='primary'
+                                onClick={() => openDrawer(room.id)}
+                            >
+                                Reservar
+                            </Button>
                         </Card>
-                    </NavLink>
-                )
-            }) : []}
-        </Flex>
+                    )
+                }) : []}
+            </Flex >
+
+            <BookingDrawer
+                open={open}
+                roomId={selectedRoomId}
+                onClose={closeDrawer}
+            />
+        </>
     );
 
 }
