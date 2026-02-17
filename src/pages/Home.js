@@ -1,14 +1,36 @@
-import { Card, Flex, Typography, Tag, Button } from 'antd';
+import { Card, Flex, Typography, Tag, Button, Input, ConfigProvider } from 'antd';
 import { NavLink } from 'react-router-dom';
 import axios from "axios";
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import BookingDrawer from '../components/BookingDrawer';
+import styled from 'styled-components';
+import { useButtonStyles } from "../styles/useButtonStyles";
+import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWind, faFan, faBabyCarriage } from "@fortawesome/free-solid-svg-icons";
+
+const StyledDiv = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+`;
+const HeaderBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+`;
 
 function Home() {
 
+    const { styles } = useButtonStyles();
+
     const [open, setOpen] = useState(false);
-    const [selectedRoomId, setSelectedRoomId] = useState(null);
+
+    const [search, setSearch] = useState("");
 
     const { data: rooms = [] } = useQuery({
         queryKey: ['rooms'],
@@ -18,25 +40,42 @@ function Home() {
         }
     });
 
-    const openDrawer = (roomId) => {
-        setSelectedRoomId(roomId);
+    const openDrawer = () => {
         setOpen(true);
     };
 
     const closeDrawer = () => {
         setOpen(false);
-        setSelectedRoomId(null);
     };
 
+    const filteredRooms = rooms.filter(room =>
+        room.name.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <>
-            <Flex
-                gap={16}
-                wrap="wrap"
-                align="flex-start"
-            >
-                {rooms ? rooms.map((room, index) => {
+            <HeaderBar>
+                <Input
+                    placeholder="Pesquisar quarto..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    prefix={<SearchOutlined />}
+                    style={{ maxWidth: 300 }}
+                />
+                <ConfigProvider
+                    button={{ className: styles.linearGradientButton }}
+                >
+                    <Button
+                        type='primary'
+                        icon={<PlusOutlined />}
+                        onClick={() => openDrawer()}
+                    >
+                        Reservar Quarto
+                    </Button>
+                </ConfigProvider>
+            </HeaderBar>
+            <StyledDiv>
+                {filteredRooms ? filteredRooms.map((room, index) => {
                     return (
 
                         <Card key={room.id}
@@ -59,28 +98,18 @@ function Home() {
                                 </Flex>
                             }
                             variant="borderless"
-                            style={{ width: 300, height: '30vh' }}
+                            style={{ width: 300, minHeight: '20vh' }}
                         >
-                            <p>Capacidade de Hóspedes : {room.current_guests} / {room.guest_capacity}</p>
-                            {room.air_conditioning ? <p>Ar Condicionado</p> : []}
-                            {room.crib ? <p>Berço</p> : []}
-                            {room.fan ? <p>Ventilador</p> : []}
-                            <p>Camas de Casal: {room.double_beds}</p>
-                            <p>Camas de Solteiro: {room.single_beds}</p>
-                            <Button
-                                type='primary'
-                                onClick={() => openDrawer(room.id)}
-                            >
-                                Reservar
-                            </Button>
+                            {room.air_conditioning && <p><FontAwesomeIcon icon={faWind} /> Ar Condicionado</p>}
+                            {room.crib && <p><FontAwesomeIcon icon={faBabyCarriage} /> Berço</p>}
+                            {room.fan && <p> <FontAwesomeIcon icon={faFan} /> Ventilador</p>}
                         </Card>
                     )
                 }) : []}
-            </Flex >
+            </StyledDiv >
 
             <BookingDrawer
                 open={open}
-                roomId={selectedRoomId}
                 onClose={closeDrawer}
             />
         </>

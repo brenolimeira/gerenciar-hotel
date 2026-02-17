@@ -5,32 +5,32 @@ import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
-
+import api from '../service'
 import { Space } from 'antd';
 
 export default function Room() {
 
     const { number } = useParams();
 
+    console.log(number)
+
     const [booking, setBooking] = useState();
-    const [guests, setGuests] = useState([]);
+    // const [guests, setGuests] = useState([]);
     const { styles } = useButtonStyles();
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/bookings/room/${number}/`)
+        api.get(`/api/bookings/?room=${number}&status=active`)
             .then(res => {
                 setBooking(res.data);
             })
             .catch(err => console.error(err));
     }, [number]);
 
-    useEffect(() => {
-        if (booking) {
-            booking.forEach(booki => {
-                setGuests(booki.guest)
-            });
-        }
-    }, [booking])
+    // useEffect(() => {
+    //     if (booking) {
+    //         setGuests(booking.flatMap(b => b.guest));
+    //     }
+    // }, [booking])
 
     const expandColumns = [
         { title: 'Nome do Hóspede', dataIndex: 'name', key: 'name' },
@@ -54,27 +54,43 @@ export default function Room() {
             title: 'Check in',
             dataIndex: 'check_in',
             key: 'check_in',
-            render: (date) => dayjs(date).format("DD/MM/YYYY")
+            render: (date) =>
+                date ? dayjs(date).format("DD/MM/YYYY HH:mm") : ""
         },
         {
             title: 'Check out',
             dataIndex: 'check_out',
             key: 'check_out',
-            render: (date) => {
-                if (date) {
-                    return dayjs(date).format("DD/MM/YYYY")
-                } else {
-                    return ""
-                }
-            }
+            render: (date) =>
+                date ? dayjs(date).format("DD/MM/YYYY HH:mm") : ""
         },
     ];
 
-    const expandedRowRender = () => {
+    const handleCheckout = async (id) => {
+        try {
+            const res = await axios.post(
+                `http://127.0.0.1:8000/api/bookings/${id}/checkout/`
+            );
+
+            const updatedBooking = res.data;
+            console.log(res.data);
+            setBooking(prev =>
+                prev.map(b =>
+                    b.id === id ? updatedBooking : b
+                )
+            );
+
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao realizar checkout");
+        }
+    };
+
+    const expandedRowRender = (record) => {
         return (
             <Table
                 columns={expandColumns}
-                dataSource={guests.map(guest => ({
+                dataSource={record.guests.map(guest => ({
                     key: guest.id,
                     name: guest.name
                 }))}
@@ -83,11 +99,13 @@ export default function Room() {
         );
     }
 
-    if (!booking) return <h2>Nenhuam Hospedagem encontrada!</h2>;
+    if (!booking) return <h2>Nenhuma Hospedagem encontrada!</h2>;
+
+    // const activeBookings = booking?.filter(b => b.status === "active") || [];
 
     return (
         <>
-            {booking.length !== 0 ? booking.map(booki => {
+            {booking.length > 0 ? booking.map(booki => {
                 return (
                     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                         <Table
@@ -100,15 +118,10 @@ export default function Room() {
                             dataSource={[{
                                 key: booki.id,
                                 number: booki.room.name,
-                                guest: guests.length,
+                                guest: booki.guest.length,
+                                guests: booki.guest,
                                 status: booki.status === 'active' ? "Ocupado" : "Livre",
-                                ocupado: () => {
-                                    if (booki.status === 'active') {
-                                        return true;
-                                    } else {
-                                        return false;
-                                    }
-                                },
+                                ocupado: booki.status === 'active',
                                 name: booki.guest.name,
                                 check_in: booki.check_in,
                                 check_out: booki.check_out
@@ -121,7 +134,7 @@ export default function Room() {
                                 className: styles.linearGradientButton
                             }}
                         >
-                            <Button type='primary' size='large' icon={<CheckOutlined />}>
+                            <Button type='primary' size='large' icon={<CheckOutlined />} onClick={() => handleCheckout(booki.id)}>
                                 Realizar Check out
                             </Button>
                         </ConfigProvider>
@@ -132,7 +145,7 @@ export default function Room() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    height: "50vh", 
+                    height: "50vh",
                 }}>
                     <ConfigProvider
                         button={{
