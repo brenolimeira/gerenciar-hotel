@@ -1,5 +1,5 @@
 import { Drawer, Form, Row, Col, Button, Input, InputNumber, Checkbox, ConfigProvider, message } from 'antd'
-import axios from 'axios';
+import api from '../service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useButtonStyles } from "../styles/useButtonStyles";
 
@@ -12,7 +12,7 @@ export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer
 
     const mutation = useMutation({
         mutationFn: (values) =>
-            axios.post('http://127.0.0.1:8000/api/rooms/', values),
+            api.post('/api/rooms/', values),
 
         onSuccess: () => {
             message.success('Quarto cadastrado com sucesso!');
@@ -27,7 +27,7 @@ export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer
 
     const updateMutation = useMutation({
         mutationFn: (values) =>
-            axios.patch(`http://127.0.0.1:8000/api/rooms/${selectedRoom.id}/`, values),
+            api.patch(`/api/rooms/${selectedRoom.id}/`, values),
 
         onSuccess: () => {
             message.success("Quarto atualizado!");

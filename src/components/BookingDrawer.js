@@ -1,5 +1,5 @@
 import { Drawer, Spin, Form, DatePicker, Button, message, Select } from "antd";
-import axios from "axios";
+import api from '../service';
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
@@ -19,27 +19,27 @@ export default function BookingDrawer({ open, onClose }) {
             setSelectedRoomId(null);
             form.resetFields();
         }
-    }, [open]);
+    }, [open, form]);
 
     const { data: guests = [] } = useQuery({
         queryKey: ["guests", guestSearch],
         queryFn: () =>
-            axios
-                .get(`http://127.0.0.1:8000/api/guests/?search=${guestSearch}`)
+            api
+                .get(`/api/guests/?search=${guestSearch}`)
                 .then(r => r.data),
         enabled: typeof guestSearch === "string"
     });
 
     const { data: rooms = [] } = useQuery({
         queryKey: ["rooms"],
-        queryFn: () => axios.get("http://127.0.0.1:8000/api/rooms/").then(r => r.data)
+        queryFn: () => api.get("/api/rooms/").then(r => r.data)
     });
 
     const { data: room, isLoading } = useQuery({
         queryKey: ['room', selectedRoomId],
         enabled: !!selectedRoomId,
         queryFn: async () => {
-            const res = await axios.get(`http://127.0.0.1:8000/api/rooms/${selectedRoomId}/`);
+            const res = await api.get(`/api/rooms/${selectedRoomId}/`);
             return res.data;
         }
     });
@@ -49,8 +49,8 @@ export default function BookingDrawer({ open, onClose }) {
         queryKey: ['blocked-dates', selectedRoomId],
         enabled: !!selectedRoomId,
         queryFn: () =>
-            axios
-                .get(`http://127.0.0.1:8000/api/bookings/blocked-dates/${selectedRoomId}/`)
+            api
+                .get(`/api/bookings/blocked-dates/${selectedRoomId}/`)
                 .then(res => res.data)
     });
 
@@ -100,7 +100,7 @@ export default function BookingDrawer({ open, onClose }) {
                 return;
             }
 
-            await axios.post("http://127.0.0.1:8000/api/bookings/", {
+            await api.post("/api/bookings/", {
                 room_id: selectedRoomId,
                 guest_ids: values.guest_ids,
                 reservation_start: start.toISOString(),

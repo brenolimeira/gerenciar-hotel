@@ -1,5 +1,5 @@
 import { Drawer, Form, Button, Input, ConfigProvider, message, DatePicker } from 'antd'
-import axios from 'axios';
+import api from '../service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useButtonStyles } from "../styles/useButtonStyles";
 import dayjs from 'dayjs';
@@ -30,7 +30,7 @@ export default function DrawerManagerGuests({ drawerOpen, drawerType, closeDrawe
 
     const mutation = useMutation({
         mutationFn: (values) =>
-            axios.post('http://127.0.0.1:8000/api/guests/', values),
+            api.post('/api/guests/', values),
 
         onSuccess: () => {
             message.success('Hóspede cadastrado com sucesso!');
@@ -45,7 +45,7 @@ export default function DrawerManagerGuests({ drawerOpen, drawerType, closeDrawe
 
     const updateMutation = useMutation({
         mutationFn: (values) =>
-            axios.patch(`http://127.0.0.1:8000/api/guests/${selectedGuest.id}/`, values),
+            api.patch(`/api/guests/${selectedGuest.id}/`, values),
 
         onSuccess: () => {
             message.success("Hóspede atualizado!");

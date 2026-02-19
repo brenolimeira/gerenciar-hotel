@@ -1,5 +1,5 @@
 import { Button, ConfigProvider, Form, Input, Modal, Space, Table, message } from "antd";
-import axios from "axios"
+import api from '../service';
 import { useState } from "react";
 import { useButtonStyles } from "../styles/useButtonStyles";
 import dayjs from "dayjs";
@@ -23,13 +23,13 @@ export default function Guests() {
     // Funçao para carregar os hóspedes cadastrados
     const { data: guests } = useQuery({
         queryKey: ["guests"],
-        queryFn: () => axios.get("http://127.0.0.1:8000/api/guests/").then(r => r.data)
+        queryFn: () => api.get("/api/guests/").then(r => r.data)
     });
 
     // Funçao para deletar o hóspede selecionado
     const deleteMutation = useMutation({
         mutationFn: (id) =>
-            axios.delete(`http://127.0.0.1:8000/api/guests/${id}/`),
+            api.delete(`/api/guests/${id}/`),
 
         onSuccess: () => {
             message.success("Hóspede removido com sucesso");

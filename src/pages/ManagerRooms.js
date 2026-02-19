@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Table, Form, Modal, Space, Input, message, ConfigProvider } from "antd";
-import axios from "axios";
+import api from '../service';
 import { useState } from "react";
 import DrawerManagerRooms from "../components/DrawerManagerRooms";
 import { useButtonStyles } from "../styles/useButtonStyles";
@@ -23,7 +23,7 @@ export default function ManagerRooms() {
     // Funçao para deletar o quarto selecionado
     const deleteMutation = useMutation({
         mutationFn: (id) =>
-            axios.delete(`http://127.0.0.1:8000/api/rooms/${id}/`),
+            api.delete(`/api/rooms/${id}/`),
 
         onSuccess: () => {
             message.success("Quarto removido com sucesso");
@@ -41,7 +41,7 @@ export default function ManagerRooms() {
     // Funçao para carregar todos os quartos
     const { data: rooms } = useQuery({
         queryKey: ["rooms"],
-        queryFn: () => axios.get("http://127.0.0.1:8000/api/rooms/").then(r => r.data)
+        queryFn: () => api.get("/api/rooms/").then(r => r.data)
     });
 
     // Pesquisar quartos

@@ -3,7 +3,6 @@ import { Table, Tag, Button, ConfigProvider, Popconfirm, Space, Empty } from 'an
 import { CheckOutlined } from '@ant-design/icons';
 import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import dayjs from 'dayjs';
 import "dayjs/locale/pt-br";
@@ -132,8 +131,8 @@ export default function Room() {
 
     const handleCheckout = async (id) => {
         try {
-            const res = await axios.post(
-                `http://127.0.0.1:8000/api/bookings/${id}/checkout/`
+            const res = await api.post(
+                `/api/bookings/${id}/checkout/`
             );
 
             const updatedBooking = res.data;

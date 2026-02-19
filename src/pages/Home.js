@@ -1,6 +1,6 @@
 import { Card, Flex, Typography, Button, Input, ConfigProvider } from 'antd';
 import { NavLink } from 'react-router-dom';
-import axios from "axios";
+import api from '../service';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import BookingDrawer from '../components/BookingDrawer';
@@ -35,7 +35,7 @@ function Home() {
     const { data: rooms = [] } = useQuery({
         queryKey: ['rooms'],
         queryFn: async () => {
-            const res = await axios.get("http://127.0.0.1:8000/api/rooms/");
+            const res = await api.get("/api/rooms/");
             return res.data;
         }
     });
