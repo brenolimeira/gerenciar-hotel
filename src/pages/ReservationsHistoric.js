@@ -2,7 +2,7 @@ import api from '../service';
 import dayjs from 'dayjs';
 import "dayjs/locale/pt-br";
 
-import { Space, Table, Tag } from "antd";
+import { Empty, Space, Table, Tag } from "antd";
 import { useEffect, useState } from 'react';
 
 dayjs.locale("pt-br");
@@ -99,7 +99,7 @@ export default function ReservationsHistoric() {
 
     return (
         <>
-            {booking.length > 0 && (
+            {booking.length > 0 ? (
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                     <Table
                         loading={loading}
@@ -135,6 +135,10 @@ export default function ReservationsHistoric() {
                         }}
                     />
                 </Space>
+            ) : (
+                <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <Empty description="Histórico vazio" />
+                </div>
             )}
         </>
     )
