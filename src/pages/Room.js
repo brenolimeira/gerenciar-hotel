@@ -1,25 +1,27 @@
 import { useParams } from 'react-router-dom';
-import { Table, Tag, Button, ConfigProvider } from 'antd'
-import { CheckOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, ConfigProvider, Popconfirm, Space, Empty } from 'antd'
+import { CheckOutlined } from '@ant-design/icons';
 import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+
 import dayjs from 'dayjs';
-import api from '../service'
-import { Space } from 'antd';
+import "dayjs/locale/pt-br";
+
+import api from '../service';
+
+dayjs.locale("pt-br");
 
 export default function Room() {
 
     const { number } = useParams();
-
-    console.log(number)
 
     const [booking, setBooking] = useState();
     // const [guests, setGuests] = useState([]);
     const { styles } = useButtonStyles();
 
     useEffect(() => {
-        api.get(`/api/bookings/?room=${number}&status=active`)
+        api.get(`/api/bookings/?room=${number}&status=active,reserved`)
             .then(res => {
                 setBooking(res.data);
             })
@@ -44,8 +46,8 @@ export default function Room() {
             key: 'status',
             render: (_, record) => {
                 return (
-                    <Tag color={record.ocupado ? "red" : "green"}>
-                        {record.ocupado ? "Ocupado" : "Livre"}
+                    <Tag color={record.ocupado ? "red" : "blue"}>
+                        {record.ocupado ? "Ocupado" : "Reservado"}
                     </Tag>
                 );
             }
@@ -64,6 +66,68 @@ export default function Room() {
             render: (date) =>
                 date ? dayjs(date).format("DD/MM/YYYY HH:mm") : ""
         },
+        {
+            title: 'Período',
+            key: 'periodo',
+            render: (_, record) => {
+                const start = record.reservation_start
+                    ? dayjs(record.reservation_start).format("DD MMM HH:mm")
+                    : "-";
+
+                const end = record.reservation_end
+                    ? dayjs(record.reservation_end).format("DD MMM HH:mm")
+                    : "-";
+
+                return (
+                    <div>
+                        <div>Início: {start}</div>
+                        <div>Fim: {end}</div>
+                    </div>
+                );
+            }
+        },
+        {
+            title: 'Ações',
+            key: 'actions',
+            render: (_, record) => (
+                <Space>
+                    {record.status === "reserved" && (
+                        <ConfigProvider
+                            button={{
+                                className: styles.linearGradientButton
+                            }}
+                        >
+                            <Popconfirm
+                                title="Confirmar check-in?"
+                                onConfirm={() => handleCheckin(record.id)}
+                            >
+                                <Button
+                                    type='primary'
+                                    icon={<CheckOutlined />}>
+                                    Check-in
+                                </Button>
+                            </Popconfirm>
+                        </ConfigProvider>
+                    )}
+
+                    {record.status === "active" && (
+                        <Button
+                            type="primary"
+                            icon={<CheckOutlined />}
+                            onClick={() => handleCheckout(record.id)}
+                        >
+                            Checkout
+                        </Button>
+                    )}
+
+                    {["reserved", "active"].includes(record.status) && (
+                        <Button danger onClick={() => handleCancel(record.id)}>
+                            Cancelar
+                        </Button>
+                    )}
+                </Space>
+            )
+        },
     ];
 
     const handleCheckout = async (id) => {
@@ -73,7 +137,6 @@ export default function Room() {
             );
 
             const updatedBooking = res.data;
-            console.log(res.data);
             setBooking(prev =>
                 prev.map(b =>
                     b.id === id ? updatedBooking : b
@@ -84,6 +147,30 @@ export default function Room() {
             console.error(err);
             alert("Erro ao realizar checkout");
         }
+    };
+
+    const handleCheckin = async (id) => {
+        try {
+            const res = await api.post(`/api/bookings/${id}/checkin/`);
+            updateBooking(res.data);
+        } catch {
+            alert("Erro ao realizar check-in");
+        }
+    };
+
+    const handleCancel = async (id) => {
+        try {
+            const res = await api.post(`/api/bookings/${id}/cancel/`);
+            updateBooking(res.data);
+        } catch {
+            alert("Erro ao cancelar reserva");
+        }
+    };
+
+    const updateBooking = (updated) => {
+        setBooking(prev =>
+            prev.map(b => b.id === updated.id ? updated : b)
+        );
     };
 
     const expandedRowRender = (record) => {
@@ -97,7 +184,7 @@ export default function Room() {
                 pagination={false}
             />
         );
-    }
+    };
 
     if (!booking) return <h2>Nenhuma Hospedagem encontrada!</h2>;
 
@@ -105,8 +192,8 @@ export default function Room() {
 
     return (
         <>
-            {booking.length > 0 ? booking.map(booki => {
-                return (
+            {booking.length > 0 ?
+                (
                     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                         <Table
                             columns={columns}
@@ -115,21 +202,23 @@ export default function Room() {
                                 defaultExpandAllRows: true
                                 //defaultExpandedRowKeys: [String(room.numero)] 
                             }}
-                            dataSource={[{
+                            dataSource={booking.map(booki => ({
                                 key: booki.id,
+                                id: booki.id,
                                 number: booki.room.name,
                                 guest: booki.guest.length,
                                 guests: booki.guest,
-                                status: booki.status === 'active' ? "Ocupado" : "Livre",
+                                status: booki.status,
                                 ocupado: booki.status === 'active',
-                                name: booki.guest.name,
+                                reservation_start: booki.reservation_start,
+                                reservation_end: booki.reservation_end,
                                 check_in: booki.check_in,
                                 check_out: booki.check_out
-                            }]}
+                            }))}
                             size='middle'
-                            pagination={false}
+                            pagination={true}
                         />
-                        <ConfigProvider
+                        {/* <ConfigProvider
                             button={{
                                 className: styles.linearGradientButton
                             }}
@@ -137,27 +226,14 @@ export default function Room() {
                             <Button type='primary' size='large' icon={<CheckOutlined />} onClick={() => handleCheckout(booki.id)}>
                                 Realizar Check out
                             </Button>
-                        </ConfigProvider>
+                        </ConfigProvider> */}
                     </Space>
-                );
-            }) : (
-                <div style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "50vh",
-                }}>
-                    <ConfigProvider
-                        button={{
-                            className: styles.linearGradientButton
-                        }}
-                    >
-                        <Button type='primary' size='large' icon={<PlusCircleOutlined />}>
-                            Criar Hospedagem
-                        </Button>
-                    </ConfigProvider>
-                </div>
-            )}
+                )
+                : (
+                    <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <Empty description="Quarto sem Reservas" />
+                    </div>
+                )}
         </>
     );
 }

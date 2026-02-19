@@ -90,7 +90,6 @@ export default function ManagerRooms() {
                 <div style={{ width: "100%", height: "100vh", padding: 16 }}>
                     <Space style={{ marginBottom: 16, width: "100%", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <label style={{ marginBottom: 4 }}>Pesquisar Quartos</label>
                             <Input
                                 placeholder="Digite o nome do quarto"
                                 value={search}

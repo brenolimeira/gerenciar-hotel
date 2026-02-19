@@ -2,16 +2,20 @@ import { Menu, Layout } from 'antd';
 
 import {
     SettingOutlined,
-    TabletOutlined,
     TeamOutlined,
 } from '@ant-design/icons';
 import { useTheme } from '../context/useTheme';
 import { NavLink } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClipboardList, faHotel } from '@fortawesome/free-solid-svg-icons';
 
 
 const { Sider } = Layout;
 
 function SideBar({ collapsed }) {
+
+    const location = useLocation();
 
     const { colors, theme } = useTheme();
     const isDark = theme === "dark";
@@ -30,7 +34,7 @@ function SideBar({ collapsed }) {
                 <Menu
                     theme={isDark ? 'dark' : 'light'}
                     mode="inline"
-                    defaultSelectedKeys={['1']}
+                    defaultSelectedKeys={[location.pathname]}
                     style={{
                         marginTop: '50px',
                         background: colors.sider,
@@ -38,8 +42,8 @@ function SideBar({ collapsed }) {
                     }}
                     items={[
                         {
-                            key: 'home',
-                            icon: <TabletOutlined style={{ color: colors.text }} />,
+                            key: '/',
+                            icon: <FontAwesomeIcon icon={faHotel} />,
                             label: (
                                 <NavLink to="/" style={{ color: colors.text }}>
                                     Hospedagem
@@ -47,7 +51,7 @@ function SideBar({ collapsed }) {
                             )
                         },
                         {
-                            key: 'rooms',
+                            key: '/room/edit',
                             icon: <SettingOutlined style={{ color: colors.text }} />,
                             label: (
                                 <NavLink to="/room/edit" style={{ color: colors.text }}>
@@ -56,11 +60,20 @@ function SideBar({ collapsed }) {
                             ),
                         },
                         {
-                            key: 'guests',
+                            key: '/guests',
                             icon: <TeamOutlined  style={{ color: colors.text }} />,
                             label: (
                                 <NavLink to="/guests" style={{ color: colors.text }}>
                                     Hóspedes
+                                </NavLink>
+                            ),
+                        },
+                        {
+                            key: '/reservations',
+                            icon: <FontAwesomeIcon icon={faClipboardList} />,
+                            label: (
+                                <NavLink to="/booking/historic" style={{ color: colors.text }}>
+                                    Histórico
                                 </NavLink>
                             ),
                         },

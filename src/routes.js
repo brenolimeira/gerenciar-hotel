@@ -3,7 +3,7 @@ import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 import Room from "./pages/Room";
 import ManagerRooms from "./pages/ManagerRooms";
 import Guests from "./pages/Guests";
-import Reservations from "./pages/Reservations";
+import Reservations from "./pages/ReservationsHistoric";
 
 function Routes(props) {
     return (
@@ -12,7 +12,7 @@ function Routes(props) {
             <Route path="room/:number" element={<Room />} />
             <Route path="/room/edit" element={<ManagerRooms />} />
             <Route path="/guests" element={<Guests />} />
-            <Route path="/booking/new/:roomId" element={<Reservations />} />
+            <Route path="/booking/historic" element={<Reservations />} />
         </ReactRouterRoutes>
     );
 }

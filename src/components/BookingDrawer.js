@@ -1,4 +1,4 @@
-import { Drawer, Typography, Spin, Form, DatePicker, Button, message, Select } from "antd";
+import { Drawer, Spin, Form, DatePicker, Button, message, Select } from "antd";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -74,13 +74,12 @@ export default function BookingDrawer({ open, onClose }) {
             return;
         }
 
-        // detail
         if (data.detail) {
             message.error(data.detail);
             return;
         }
 
-        // 🔥 ERROS POR CAMPO (SEU CASO)
+        // ERROS POR CAMPO
         const firstFieldError = Object.values(data)?.[0];
 
         if (Array.isArray(firstFieldError)) {

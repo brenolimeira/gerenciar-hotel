@@ -1,4 +1,4 @@
-import { Card, Flex, Typography, Tag, Button, Input, ConfigProvider } from 'antd';
+import { Card, Flex, Typography, Button, Input, ConfigProvider } from 'antd';
 import { NavLink } from 'react-router-dom';
 import axios from "axios";
 import { useQuery } from '@tanstack/react-query';
@@ -9,7 +9,7 @@ import { useButtonStyles } from "../styles/useButtonStyles";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWind, faFan, faBabyCarriage } from "@fortawesome/free-solid-svg-icons";
+import { faWind, faFan, faBabyCarriage, faPeopleRoof, faBed } from "@fortawesome/free-solid-svg-icons";
 
 const StyledDiv = styled.div`
     display: grid;
@@ -89,9 +89,6 @@ function Home() {
                                         <Typography.Title level={3}>
                                             <Flex gap={24} align='center' justify='space-between'>
                                                 {room.name}
-                                                <Tag color={room.occupied ? "#A30000" : '#0A7500'} style={{ maxHeight: '3vh' }}>
-                                                    {room.occupied ? "Ocupado" : "Livre"}
-                                                </Tag>
                                             </Flex>
                                         </Typography.Title>
                                     </NavLink>
@@ -103,6 +100,9 @@ function Home() {
                             {room.air_conditioning && <p><FontAwesomeIcon icon={faWind} /> Ar Condicionado</p>}
                             {room.crib && <p><FontAwesomeIcon icon={faBabyCarriage} /> Berço</p>}
                             {room.fan && <p> <FontAwesomeIcon icon={faFan} /> Ventilador</p>}
+                            {room.guest_capacity && <p><FontAwesomeIcon icon={faPeopleRoof} /> Capacidade Total - {room.guest_capacity} pessoas </p>}
+                            {room.double_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de casal - {room.double_beds} </p>}
+                            {room.single_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de solteiro - {room.single_beds} </p>}
                         </Card>
                     )
                 }) : []}
