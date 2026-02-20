@@ -196,7 +196,7 @@ export default function Room() {
     if (loading) {
         return (
             <div style={{
-                height: "100vh",
+                flex:1,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center"
@@ -259,7 +259,7 @@ export default function Room() {
                     </div>
                 )
                 : (
-                    <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <div style={{ flex:1, display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <Empty description="Quarto sem Reservas" />
                     </div>
                 )}

@@ -136,7 +136,7 @@ export default function ReservationsHistoric() {
                     />
                 </Space>
             ) : (
-                <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Empty description="Histórico vazio" />
                 </div>
             )}

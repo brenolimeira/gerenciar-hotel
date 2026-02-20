@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Form, Input, Modal, Space, Table, message } from "antd";
+import { Button, ConfigProvider, Form, Input, Modal, Space, Spin, Table, message } from "antd";
 import api from '../service';
 import { useState } from "react";
 import { useButtonStyles } from "../styles/useButtonStyles";
@@ -21,7 +21,7 @@ export default function Guests() {
     const { styles } = useButtonStyles();
 
     // Funçao para carregar os hóspedes cadastrados
-    const { data: guests } = useQuery({
+    const { data: guests = [], isLoading } = useQuery({
         queryKey: ["guests"],
         queryFn: () => api.get("/api/guests/").then(r => r.data)
     });
@@ -142,7 +142,18 @@ export default function Guests() {
         }
     ]
 
-    if (!guests) return <h2>Nenhum Cliente Cadastrado!</h2>;
+    if (isLoading) {
+        return (
+            <div style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+            }}>
+                <Spin size="large" />
+            </div>
+        );
+    }
 
     return (
         <>

@@ -52,15 +52,6 @@ function SideBar({ collapsed, setCollapsed }) {
                             )
                         },
                         {
-                            key: '/room/edit',
-                            icon: <SettingOutlined style={{ color: colors.text }} />,
-                            label: (
-                                <NavLink to="/room/edit" style={{ color: colors.text }}>
-                                    Gerenciar Quartos
-                                </NavLink>
-                            ),
-                        },
-                        {
                             key: '/guests',
                             icon: <TeamOutlined style={{ color: colors.text }} />,
                             label: (
@@ -70,11 +61,20 @@ function SideBar({ collapsed, setCollapsed }) {
                             ),
                         },
                         {
-                            key: '/reservations',
+                            key: '/booking/historic',
                             icon: <FontAwesomeIcon icon={faClipboardList} />,
                             label: (
                                 <NavLink to="/booking/historic" style={{ color: colors.text }}>
                                     Histórico
+                                </NavLink>
+                            ),
+                        },
+                        {
+                            key: '/room/edit',
+                            icon: <SettingOutlined style={{ color: colors.text }} />,
+                            label: (
+                                <NavLink to="/room/edit" style={{ color: colors.text }}>
+                                    Gerenciar Quartos
                                 </NavLink>
                             ),
                         },

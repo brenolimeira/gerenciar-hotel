@@ -80,7 +80,7 @@ export default function ManagerRooms() {
     if (isLoading) {
         return (
             <div style={{
-                height: "100vh",
+                flex: 1,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center"
