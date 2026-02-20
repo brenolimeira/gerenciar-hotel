@@ -1,4 +1,4 @@
-import { Card, Flex, Typography, Button, Input, ConfigProvider } from 'antd';
+import { Card, Flex, Typography, Button, Input, ConfigProvider, Spin } from 'antd';
 import { NavLink } from 'react-router-dom';
 import api from '../service';
 import { useQuery } from '@tanstack/react-query';
@@ -12,16 +12,79 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWind, faFan, faBabyCarriage, faPeopleRoof, faBed } from "@fortawesome/free-solid-svg-icons";
 
 const StyledDiv = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
+    flex:1;
+    width:100%;
+    min-width:0;
+
+    display:grid;
+    grid-template-columns:repeat(auto-fill,260px);
+    justify-content:start;
+
+    gap:24px;
+    padding:24px;
+    overflow-y:auto;
+    align-items:start;
 `;
 const HeaderBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+`;
+
+const StyledCard = styled(Card)`
+  border-radius:16px !important;
+  background:${({ theme }) => theme.cardBackground} !important;
+  border:1px solid ${({ theme }) => theme.border};
+  transition:.25s;
+  cursor:pointer;
+
+  min-height:130px;
+  max-width:260px;
+
+  box-shadow:${({ theme }) => theme.shadow};
+
+  &:hover{
+    transform:translateY(-4px);
+    box-shadow:${({ theme }) => theme.shadowHover};
+  }
+
+  .ant-card-body{
+    padding:16px !important;
+  }
+
+  .ant-typography{
+    color:${({ theme }) => theme.text} !important;
+    font-weight:600;
+  }
+
+  p{
+    color:${({ theme }) => theme.textSecondary} !important;
+    margin-bottom:6px;
+    font-size:13px;
+  }
+`;
+
+const AnimatedWrapper = styled.div`
+
+    width:100%;
+    min-width:0;
+    display:contents;
+
+    animation: fadeUp .5s ease forwards;
+    opacity:0;
+
+    @keyframes fadeUp{
+        from{
+            transform:translateY(20px);
+            opacity:0;
+        }
+        to{
+            transform:translateY(0);
+            opacity:1;
+        }
+    }
 `;
 
 function Home() {
@@ -32,7 +95,7 @@ function Home() {
 
     const [search, setSearch] = useState("");
 
-    const { data: rooms = [] } = useQuery({
+    const { data: rooms = [], isLoading } = useQuery({
         queryKey: ['rooms'],
         queryFn: async () => {
             const res = await api.get("/api/rooms/");
@@ -52,9 +115,27 @@ function Home() {
         room.name.toLowerCase().includes(search.toLowerCase())
     );
 
+    if (isLoading) {
+        return (
+            <StyledDiv>
+                {[...Array(6)].map((_, i) => (
+                    <Card key={i} style={{ height: 180, borderRadius: 18 }}>
+                        <Spin />
+                    </Card>
+                ))}
+            </StyledDiv>
+        )
+    }
+
     return (
-        <>
-            <HeaderBar>
+        <div style={{
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
+        }}>
+            <HeaderBar style={{ flexShrink: 0 }}>
                 <Input
                     placeholder="Pesquisar quarto..."
                     value={search}
@@ -77,8 +158,8 @@ function Home() {
             <StyledDiv>
                 {filteredRooms ? filteredRooms.map((room, index) => {
                     return (
-
-                        <Card key={room.id}
+                        //<AnimatedWrapper style={{ animationDelay: `${index * 0.07}s` }} key={room.id}>
+                        <StyledCard key={room.id}
                             title={
                                 <Flex gap={24} align="center" justify="space-between">
                                     <NavLink
@@ -95,7 +176,7 @@ function Home() {
                                 </Flex>
                             }
                             variant="borderless"
-                            style={{ width: 300, minHeight: '20vh' }}
+                            style={{ minHeight: 140, animationDelay: `${index * 0.07}s` }}
                         >
                             {room.air_conditioning && <p><FontAwesomeIcon icon={faWind} /> Ar Condicionado</p>}
                             {room.crib && <p><FontAwesomeIcon icon={faBabyCarriage} /> Berço</p>}
@@ -103,7 +184,8 @@ function Home() {
                             {room.guest_capacity && <p><FontAwesomeIcon icon={faPeopleRoof} /> Capacidade Total - {room.guest_capacity} pessoas </p>}
                             {room.double_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de casal - {room.double_beds} </p>}
                             {room.single_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de solteiro - {room.single_beds} </p>}
-                        </Card>
+                        </StyledCard>
+                        //</AnimatedWrapper>
                     )
                 }) : []}
             </StyledDiv >
@@ -112,7 +194,7 @@ function Home() {
                 open={open}
                 onClose={closeDrawer}
             />
-        </>
+        </div>
     );
 
 }

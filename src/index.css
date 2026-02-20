@@ -11,3 +11,72 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html, body, #root {
+  height: 100%;
+}
+
+.ant-table-wrapper {
+  height: 100%;
+}
+
+.ant-table {
+  height: 100%;
+  background: transparent !important;
+}
+
+/* header */
+.ant-table-thead > tr > th {
+  background: transparent !important;
+  color: #94a3b8 !important;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(148,163,184,.15) !important;
+}
+
+/* células */
+.ant-table-tbody > tr > td {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(148,163,184,.08) !important;
+}
+
+/* hover linha */
+.ant-table-tbody > tr:hover > td {
+  background: rgba(59,130,246,.06) !important;
+}
+
+.ant-table-tbody > tr {
+  transition: all .2s ease;
+}
+
+.ant-table-tbody > tr:hover {
+  transform: scale(1.002);
+}
+
+.ant-table-container {
+  height: 100%;
+  border: none !important;
+  overflow:hidden;
+}
+
+.ant-table-body {
+  max-height: none !important;
+}
+
+.table-row:hover td {
+  background: rgba(59,130,246,.06) !important;
+  transition:.2s;
+}
+
+.ant-table-content,
+.ant-table-body {
+  background: transparent !important;
+}
+
+.ant-table-body {
+  overflow-y: auto !important;
+  scrollbar-width: none; /* firefox */
+}
+
+.ant-table-body::-webkit-scrollbar {
+  display: none; /* chrome */
+}

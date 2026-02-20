@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Table, Form, Modal, Space, Input, message, ConfigProvider } from "antd";
+import { Button, Table, Form, Modal, Space, Input, message, ConfigProvider, Spin } from "antd";
 import api from '../service';
 import { useState } from "react";
 import DrawerManagerRooms from "../components/DrawerManagerRooms";
@@ -11,11 +11,8 @@ export default function ManagerRooms() {
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [drawerType, setDrawerType] = useState(null);
-
     const [search, setSearch] = useState("");
-
     const [form] = Form.useForm();
-
     const [selectedRoom, setSelectedRoom] = useState(null);
 
     const queryClient = useQueryClient();
@@ -39,13 +36,13 @@ export default function ManagerRooms() {
     });
 
     // Funçao para carregar todos os quartos
-    const { data: rooms } = useQuery({
+    const { data: rooms = [], isLoading } = useQuery({
         queryKey: ["rooms"],
         queryFn: () => api.get("/api/rooms/").then(r => r.data)
     });
 
     // Pesquisar quartos
-    const filteredRooms = rooms?.filter(room =>
+    const filteredRooms = rooms.filter(room =>
         room.name.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -80,6 +77,19 @@ export default function ManagerRooms() {
         openDrawer('edit', room)
     };
 
+    if (isLoading) {
+        return (
+            <div style={{
+                height: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+            }}>
+                <Spin size="large" />
+            </div>
+        );
+    }
+
     return (
         <>
             <div style={{
@@ -111,6 +121,7 @@ export default function ManagerRooms() {
                     <Table
                         dataSource={filteredRooms}
                         rowKey="id"
+                        loading={isLoading}
                         columns={[
                             { title: "Nome", dataIndex: "name" },
                             {

@@ -13,7 +13,7 @@ import { faClipboardList, faHotel } from '@fortawesome/free-solid-svg-icons';
 
 const { Sider } = Layout;
 
-function SideBar({ collapsed }) {
+function SideBar({ collapsed, setCollapsed }) {
 
     const location = useLocation();
 
@@ -26,15 +26,16 @@ function SideBar({ collapsed }) {
                 trigger={null}
                 collapsible
                 collapsed={collapsed}
-                style={{
-                    background: colors.sider,
-                }}
-            >   
+                breakpoint="lg"
+                collapsedWidth={80}
+                onBreakpoint={(broken) => setCollapsed(broken)}
+                style={{ background: colors.sider }}
+            >
                 <div className="demo-logo-vertical" />
                 <Menu
                     theme={isDark ? 'dark' : 'light'}
                     mode="inline"
-                    defaultSelectedKeys={[location.pathname]}
+                    selectedKeys={[location.pathname]}
                     style={{
                         marginTop: '50px',
                         background: colors.sider,
@@ -61,7 +62,7 @@ function SideBar({ collapsed }) {
                         },
                         {
                             key: '/guests',
-                            icon: <TeamOutlined  style={{ color: colors.text }} />,
+                            icon: <TeamOutlined style={{ color: colors.text }} />,
                             label: (
                                 <NavLink to="/guests" style={{ color: colors.text }}>
                                     Hóspedes

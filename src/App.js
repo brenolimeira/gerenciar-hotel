@@ -20,8 +20,8 @@ const App = () => {
   return (
     <Router>
       <Layout style={{ background: colors.background, minHeight: '100vh' }}>
-        <SideBar collapsed={collapsed} />
-        <Layout style={{ background: colors.background }}>
+        <SideBar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <Layout style={{ background: colors.background, display: "flex", flexDirection: "column" }}>
           <SideHeader
             collapsed={collapsed}
             setCollapsed={setCollapsed}
@@ -30,12 +30,18 @@ const App = () => {
             style={{
               margin: '24px 16px',
               padding: 24,
-              minHeight: 280,
               background: colors.contentBackground,
               borderRadius: borderRadiusLG,
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+              width: "100%",
             }}
           >
-            <Routes />
+            <div style={{ flex: 1, minHeight: 0, display: "flex" }}>
+              <Routes />
+            </div>
           </Content>
         </Layout>
       </Layout>

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Table, Tag, Button, ConfigProvider, Popconfirm, Space, Empty } from 'antd'
+import { Table, Tag, Button, ConfigProvider, Popconfirm, Space, Empty, Spin } from 'antd'
 import { CheckOutlined } from '@ant-design/icons';
 import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
@@ -15,16 +15,20 @@ export default function Room() {
 
     const { number } = useParams();
 
-    const [booking, setBooking] = useState();
+    const [booking, setBooking] = useState([]);
     // const [guests, setGuests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [loadingBtn, setLoadingBtn] = useState(null);
     const { styles } = useButtonStyles();
 
     useEffect(() => {
+        setLoading(true);
         api.get(`/api/bookings/?room=${number}&status=active,reserved`)
             .then(res => {
                 setBooking(res.data);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, [number]);
 
     // useEffect(() => {
@@ -90,29 +94,28 @@ export default function Room() {
             key: 'actions',
             render: (_, record) => (
                 <Space>
+
                     {record.status === "reserved" && (
-                        <ConfigProvider
-                            button={{
-                                className: styles.linearGradientButton
-                            }}
+                        <Popconfirm
+                            title="Confirmar check-in?"
+                            onConfirm={() => handleCheckin(record.id)}
                         >
-                            <Popconfirm
-                                title="Confirmar check-in?"
-                                onConfirm={() => handleCheckin(record.id)}
+                            <Button
+                                type="primary"
+                                icon={<CheckOutlined />}
+                                className={styles.accentButton}
                             >
-                                <Button
-                                    type='primary'
-                                    icon={<CheckOutlined />}>
-                                    Check-in
-                                </Button>
-                            </Popconfirm>
-                        </ConfigProvider>
+                                Check-in
+                            </Button>
+                        </Popconfirm>
                     )}
 
                     {record.status === "active" && (
                         <Button
                             type="primary"
                             icon={<CheckOutlined />}
+                            className={styles.primaryButton}
+                            loading={loadingBtn === record.id}
                             onClick={() => handleCheckout(record.id)}
                         >
                             Checkout
@@ -120,10 +123,15 @@ export default function Room() {
                     )}
 
                     {["reserved", "active"].includes(record.status) && (
-                        <Button danger onClick={() => handleCancel(record.id)}>
+                        <Button
+                            danger
+                            className={styles.dangerButton}
+                            onClick={() => handleCancel(record.id)}
+                        >
                             Cancelar
                         </Button>
                     )}
+
                 </Space>
             )
         },
@@ -131,10 +139,8 @@ export default function Room() {
 
     const handleCheckout = async (id) => {
         try {
-            const res = await api.post(
-                `/api/bookings/${id}/checkout/`
-            );
-
+            setLoadingBtn(id);
+            const res = await api.post(`/api/bookings/${id}/checkout/`);
             const updatedBooking = res.data;
             setBooking(prev =>
                 prev.map(b =>
@@ -145,6 +151,8 @@ export default function Room() {
         } catch (err) {
             console.error(err);
             alert("Erro ao realizar checkout");
+        } finally {
+            setLoadingBtn(null);
         }
     };
 
@@ -185,7 +193,18 @@ export default function Room() {
         );
     };
 
-    if (!booking) return <h2>Nenhuma Hospedagem encontrada!</h2>;
+    if (loading) {
+        return (
+            <div style={{
+                height: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+            }}>
+                <Spin size="large" />
+            </div>
+        );
+    }
 
     // const activeBookings = booking?.filter(b => b.status === "active") || [];
 
@@ -193,8 +212,18 @@ export default function Room() {
         <>
             {booking.length > 0 ?
                 (
-                    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                    <div
+                        style={{
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            minHeight: 0,
+                        }}
+                    >
                         <Table
+                            sticky
+                            bordered={false}
+                            rowClassName={() => "table-row"}
                             columns={columns}
                             expandable={{
                                 expandedRowRender,
@@ -215,7 +244,8 @@ export default function Room() {
                                 check_out: booki.check_out
                             }))}
                             size='middle'
-                            pagination={true}
+                            pagination
+                            style={{ flex: 1 }}
                         />
                         {/* <ConfigProvider
                             button={{
@@ -226,7 +256,7 @@ export default function Room() {
                                 Realizar Check out
                             </Button>
                         </ConfigProvider> */}
-                    </Space>
+                    </div>
                 )
                 : (
                     <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
