@@ -40,8 +40,11 @@ const StyledCard = styled(Card)`
   transition:.25s;
   cursor:pointer;
 
-  min-height:130px;
-  max-width:260px;
+  height:220px; /* altura padrão fixa */
+  width:260px;
+
+  display:flex;
+  flex-direction:column;
 
   box-shadow:${({ theme }) => theme.shadow};
 
@@ -52,6 +55,10 @@ const StyledCard = styled(Card)`
 
   .ant-card-body{
     padding:16px !important;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
   }
 
   .ant-typography{
@@ -61,7 +68,7 @@ const StyledCard = styled(Card)`
 
   p{
     color:${({ theme }) => theme.textSecondary} !important;
-    margin-bottom:6px;
+    margin:0;
     font-size:13px;
   }
 `;
