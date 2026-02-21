@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Form, Input, Modal, Space, Spin, Table, message } from "antd";
+import { Button, ConfigProvider, Flex, Form, Grid, Input, Modal, Space, Spin, Table, message } from "antd";
 import api from '../service';
 import { useState } from "react";
 import { useButtonStyles } from "../styles/useButtonStyles";
@@ -6,6 +6,11 @@ import dayjs from "dayjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import DrawerManagerGuests from "../components/DrawerManagerGuests";
 import { formatCPF, formatPhone } from "../utils";
+import { PlusOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPersonCirclePlus } from "@fortawesome/free-solid-svg-icons";
+
+const {useBreakpoint} = Grid;
 
 export default function Guests() {
 
@@ -13,6 +18,8 @@ export default function Guests() {
     const [drawerType, setDrawerType] = useState(null);
     const [search, setSearch] = useState("");
     const [selectedGuest, setSelectedGuest] = useState(null);
+    const screens  = useBreakpoint();
+    const isMobile = !screens.md;
 
     const [form] = Form.useForm();
 
@@ -120,7 +127,7 @@ export default function Guests() {
             title: 'Ações',
             key: 'actions',
             render: (_, guest) => (
-                <div>
+                <Flex gap={8}>
                     <ConfigProvider
                         button={{
                             className: styles.linearGradientButton
@@ -137,7 +144,7 @@ export default function Guests() {
                     <Button type="primary" danger onClick={() => handleDelete(guest)} style={{ marginLeft: 4 }}>
                         Remover
                     </Button>
-                </div>
+                </Flex>
             )
         }
     ]
@@ -172,7 +179,7 @@ export default function Guests() {
                             type="primary"
                             onClick={() => openDrawer("create")}
                         >
-                            Cadastrar Hóspede
+                            {isMobile ? <FontAwesomeIcon icon={faPersonCirclePlus} /> : <Flex gap={8}><PlusOutlined/> Cadastrar Hóspede </Flex>}
                         </Button>
                     </ConfigProvider>
                 </Space>
