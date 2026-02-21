@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Table, Tag, Button, ConfigProvider, Popconfirm, Space, Empty, Spin } from 'antd'
+import { Table, Tag, Button, Popconfirm, Space, Empty, Spin } from 'antd'
 import { CheckOutlined } from '@ant-design/icons';
 import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
@@ -42,11 +42,12 @@ export default function Room() {
     ]
 
     const columns = [
-        { title: 'Quarto', dataIndex: 'number', key: 'number' },
-        { title: 'Hóspedes', dataIndex: 'guest', key: 'guest' },
+        { title: 'Quarto', dataIndex: 'number', key: 'number', responsive: ['xs', 'sm', 'md', 'lg', 'xl'] },
+        { title: 'Hóspedes', dataIndex: 'guest', key: 'guest', responsive: ['md', 'lg', 'xl'], size: '80px' },
         {
             title: 'Status',
             key: 'status',
+            size: '80px',
             render: (_, record) => {
                 return (
                     <Tag color={record.ocupado ? "red" : "blue"}>
@@ -59,6 +60,7 @@ export default function Room() {
             title: 'Check in',
             dataIndex: 'check_in',
             key: 'check_in',
+            responsive: ['md', 'lg', 'xl'],
             render: (date) =>
                 date ? dayjs(date).format("DD/MM/YYYY HH:mm") : ""
         },
@@ -66,12 +68,14 @@ export default function Room() {
             title: 'Check out',
             dataIndex: 'check_out',
             key: 'check_out',
+            responsive: ['md', 'lg', 'xl'],
             render: (date) =>
                 date ? dayjs(date).format("DD/MM/YYYY HH:mm") : ""
         },
         {
             title: 'Período',
             key: 'periodo',
+            responsive: ['md', 'lg', 'xl'],
             render: (_, record) => {
                 const start = record.reservation_start
                     ? dayjs(record.reservation_start).format("DD MMM HH:mm")
@@ -95,7 +99,7 @@ export default function Room() {
             render: (_, record) => (
                 <Space>
 
-                    {record.status === "reserved" && (
+                    {record.status === "reserved" && record.status === "active" && (
                         <Popconfirm
                             title="Confirmar check-in?"
                             onConfirm={() => handleCheckin(record.id)}

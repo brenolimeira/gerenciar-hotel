@@ -170,7 +170,7 @@ export default function DrawerManagerGuests({ drawerOpen, drawerType, closeDrawe
                         Salvar
                     </Button>
 
-                    <Button onClick={() => form.resetFields()} style={{ marginLeft: 8 }}>
+                    <Button type="primary" danger onClick={() => form.resetFields()} style={{ marginLeft: 8 }}>
                         Resetar
                     </Button>
                 </Form>

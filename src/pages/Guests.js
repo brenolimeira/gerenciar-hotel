@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Flex, Form, Grid, Input, Modal, Space, Spin, Table, message } from "antd";
+import { Button, ConfigProvider, Flex, Form, Grid, Input, Modal, Space, Spin, Table, Tooltip, message } from "antd";
 import api from '../service';
 import { useState } from "react";
 import { useButtonStyles } from "../styles/useButtonStyles";
@@ -6,9 +6,9 @@ import dayjs from "dayjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import DrawerManagerGuests from "../components/DrawerManagerGuests";
 import { formatCPF, formatPhone } from "../utils";
-import { PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPersonCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faPersonCirclePlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const {useBreakpoint} = Grid;
 
@@ -106,7 +106,7 @@ export default function Guests() {
             dataIndex: 'cpf',
             key: 'cpf',
             render: (cpf) => formatCPF(cpf),
-            responsive: ['md', 'lg', 'xl']
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
         { title: 'RG', dataIndex: 'rg', key: 'rg', responsive: ['lg', 'xl'] },
         {
@@ -137,12 +137,16 @@ export default function Guests() {
                             type="primary"
                             onClick={() => handleSelectGuest(guest)}
                         >
-                            Editar
+                            <Tooltip title="Editar">
+                                <EditOutlined />
+                            </Tooltip>
                         </Button>
                     </ConfigProvider>
 
                     <Button type="primary" danger onClick={() => handleDelete(guest)} style={{ marginLeft: 4 }}>
-                        Remover
+                        <Tooltip title="Remover">   
+                            <FontAwesomeIcon icon={faTrashCan} />
+                        </Tooltip>
                     </Button>
                 </Flex>
             )

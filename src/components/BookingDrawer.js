@@ -123,37 +123,92 @@ export default function BookingDrawer({ open, onClose }) {
 
     const disabledDate = (current) => {
         if (!current) return false;
-
-        return blockedDates.some(({ reservation_start, reservation_end }) => {
-            return current.isBetween(
-                dayjs(reservation_start),
-                dayjs(reservation_end),
-                "day",
-                '[]'
-            );
+    
+        const dayStart = current.startOf("day");
+    
+        // cria array das 24 horas
+        const hours = Array.from({ length: 24 }, (_, i) =>
+            dayStart.add(i, "hour")
+        );
+    
+        // marca quais horas estão livres
+        const freeHoursMap = hours.map(hour => {
+            const hourEnd = hour.add(1, "hour");
+    
+            const isBlocked = blockedDates.some(({ reservation_start, reservation_end }) => {
+                const start = dayjs(reservation_start);
+                const end = dayjs(reservation_end);
+    
+                return hour.isBefore(end) && hourEnd.isAfter(start);
+            });
+    
+            return !isBlocked;
         });
+    
+        // agora verifica se existem 4 horas consecutivas livres
+        let consecutive = 0;
+    
+        for (let i = 0; i < freeHoursMap.length; i++) {
+            if (freeHoursMap[i]) {
+                consecutive++;
+                if (consecutive >= 4) {
+                    return false; // tem 4h livres - dia disponível
+                }
+            } else {
+                consecutive = 0;
+            }
+        }
+    
+        // não encontrou 4h seguidas - bloqueia o dia
+        return true;
     };
 
     const disabledTime = (date) => {
         if (!date) return {};
 
-        const ranges = blockedDates.filter(r =>
-            date.isBetween(dayjs(r.reservation_start), dayjs(r.reservation_end), "day", "[]")
-        );
+        const disabledHours = new Set();
+        const disabledMinutes = {};
 
-        const disabledHours = [];
-
-        ranges.forEach(r => {
+        blockedDates.forEach(r => {
             const start = dayjs(r.reservation_start);
             const end = dayjs(r.reservation_end);
 
-            for (let h = start.hour(); h <= end.hour(); h++) {
-                disabledHours.push(h);
+            // Se o dia está totalmente dentro do intervalo
+            if (date.isAfter(start, "day") && date.isBefore(end, "day")) {
+                for (let h = 0; h < 24; h++) {
+                    disabledHours.add(h);
+                }
+            }
+
+            // Dia inicial
+            if (date.isSame(start, "day")) {
+                for (let h = start.hour(); h < 24; h++) {
+                    disabledHours.add(h);
+                }
+
+                disabledMinutes[start.hour()] = Array.from(
+                    { length: 60 },
+                    (_, i) => i
+                ).filter(m => m < start.minute());
+            }
+
+            // Dia final
+            if (date.isSame(end, "day")) {
+                for (let h = 0; h <= end.hour(); h++) {
+                    disabledHours.add(h);
+                }
+
+                disabledMinutes[end.hour()] = Array.from(
+                    { length: 60 },
+                    (_, i) => i
+                ).filter(m => m > end.minute());
             }
         });
 
         return {
-            disabledHours: () => [...new Set(disabledHours)]
+            disabledHours: () => Array.from(disabledHours),
+            disabledMinutes: (selectedHour) =>
+                disabledMinutes[selectedHour] || []
         };
     };
 

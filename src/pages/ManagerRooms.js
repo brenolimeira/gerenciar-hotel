@@ -1,9 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Table, Form, Modal, Space, Input, message, ConfigProvider, Spin } from "antd";
+import { Button, Table, Form, Modal, Space, Input, message, ConfigProvider, Spin, Grid, Flex, Tag, Tooltip } from "antd";
 import api from '../service';
 import { useState } from "react";
 import DrawerManagerRooms from "../components/DrawerManagerRooms";
 import { useButtonStyles } from "../styles/useButtonStyles";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+
+const { useBreakpoint } = Grid;
 
 export default function ManagerRooms() {
 
@@ -14,6 +19,9 @@ export default function ManagerRooms() {
     const [search, setSearch] = useState("");
     const [form] = Form.useForm();
     const [selectedRoom, setSelectedRoom] = useState(null);
+
+    const screens = useBreakpoint();
+    const isMobile = !screens.md;
 
     const queryClient = useQueryClient();
 
@@ -45,6 +53,70 @@ export default function ManagerRooms() {
     const filteredRooms = rooms.filter(room =>
         room.name.toLowerCase().includes(search.toLowerCase())
     );
+
+    const colums = [
+        {
+            title: "Nome",
+            dataIndex: "name"
+        },
+        {
+            title: "Capacidade",
+            dataIndex: "guest_capacity"
+        },
+        {
+            title: "Arcondicionado",
+            dataIndex: "air_conditioning",
+            render: (air) => {
+                return <Tag color={air ? "green" : "red"}>{air ? "Sim" : "Não"}</Tag>
+            }
+        },
+        {
+            title: "Ventilador",
+            dataIndex: "fan",
+            render: (fan) => {
+                return <Tag color={fan ? "green" : "red"}>{fan ? "Sim" : "Não"}</Tag>
+            }
+        },
+        {
+            title: "Quantidade cama casal",
+            dataIndex: "double_beds"
+        },
+        {
+            title: "Quantidade cama solteiro",
+            dataIndex: "single_beds"
+        },
+        {
+            title: "Ações",
+            render: (_, room) => (
+                <>
+                    <div>
+                        <ConfigProvider
+                            button={{ className: styles.linearGradientButton }}
+                        >
+                            <Button
+                                type="primary"
+                                onClick={() => handleSelectRoom(room)}
+                                style={{ marginRight: 5 }}
+                            >
+                                <Tooltip title="Editar">
+                                    <EditOutlined />
+                                </Tooltip>
+                            </Button>
+                        </ConfigProvider>
+                        <Button
+                            type="primary"
+                            danger
+                            onClick={() => handleDelete(room)}
+                        >
+                            <Tooltip title="Remover">
+                                <FontAwesomeIcon icon={faTrashCan} />
+                            </Tooltip>
+                        </Button>
+                    </div>
+                </>
+            )
+        }
+    ];
 
     const openDrawer = (type, room = null) => {
         setDrawerType(type);
@@ -114,7 +186,10 @@ export default function ManagerRooms() {
                                 type="primary"
                                 onClick={() => openDrawer("create")}
                             >
-                                Cadastrar Quarto
+                                {isMobile ?
+                                    <PlusOutlined /> :
+                                    <Flex gap={8}><PlusOutlined />Cadastrar Quarto</Flex>
+                                }
                             </Button>
                         </ConfigProvider>
                     </Space>
@@ -122,24 +197,7 @@ export default function ManagerRooms() {
                         dataSource={filteredRooms}
                         rowKey="id"
                         loading={isLoading}
-                        columns={[
-                            { title: "Nome", dataIndex: "name" },
-                            {
-                                title: "Ações",
-                                render: (_, room) => (
-                                    <>
-                                        <div>
-                                            <ConfigProvider
-                                                button={{ className: styles.linearGradientButton }}
-                                            >
-                                                <Button onClick={() => handleSelectRoom(room)} style={{ marginRight: 5 }} >Editar</Button>
-                                            </ConfigProvider>
-                                            <Button danger onClick={() => handleDelete(room)}>Remover</Button>
-                                        </div>
-                                    </>
-                                )
-                            }
-                        ]}
+                        columns={colums}
                     />
                 </div>
             </div>

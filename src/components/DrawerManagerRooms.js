@@ -1,12 +1,15 @@
-import { Drawer, Form, Row, Col, Button, Input, InputNumber, Checkbox, ConfigProvider, message } from 'antd'
+import { Drawer, Form, Button, Input, InputNumber, Checkbox, ConfigProvider, message, Flex } from 'antd'
 import api from '../service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useButtonStyles } from "../styles/useButtonStyles";
+import { useTheme } from '../context/useTheme';
 
 export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer, forms, selectedRoom, setSelectedRoom }) {
 
     const { styles } = useButtonStyles();
     const [form] = Form.useForm();
+
+    const { colors, theme } = useTheme();
 
     const queryClient = useQueryClient();
 
@@ -55,7 +58,7 @@ export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer
         <Drawer
             title={
                 (drawerType === 'create' && 'Cadastrar Quarto') ||
-                (drawerType === 'edit' && 'Editar Quartos') 
+                (drawerType === 'edit' && 'Editar Quartos')
             }
             placement="right"
             size={480}
@@ -69,85 +72,58 @@ export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer
                     form={form}
                     onFinish={onFinish}
                 >
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item label="Nome" name="name" rules={[{ required: true }]}>
-                                <Input style={{ width: '100%' }} />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item label="Quantidade de Hóspedes" name="guest_capacity" rules={[{ required: true }]}>
-                                <InputNumber />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item label="Camas de Casal" name="double_beds" rules={[{ required: true }]}>
-                                <InputNumber />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item label="Camas de Solteiro" name="single_beds" rules={[{ required: true }]}>
-                                <InputNumber />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                name="air_conditioning"
-                                valuePropName="checked"
+                    <Form.Item label="Nome" name="name" rules={[{ required: true }]}>
+                        <Input style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="Quantidade de Hóspedes" name="guest_capacity" rules={[{ required: true }]}>
+                        <InputNumber style={{ width: "100%" }} />
+                    </Form.Item>
+                    <Form.Item label="Camas de Casal" name="double_beds" rules={[{ required: true }]}>
+                        <InputNumber style={{ width: "100%" }} />
+                    </Form.Item>
+                    <Form.Item label="Camas de Solteiro" name="single_beds" rules={[{ required: true }]}>
+                        <InputNumber style={{ width: "100%" }} />
+                    </Form.Item>
+                    <Form.Item
+                        name="air_conditioning"
+                        valuePropName="checked"
+                    >
+                        <Checkbox>Ar Condicionado</Checkbox>
+                    </Form.Item>
+                    <Form.Item
+                        name="fan"
+                        valuePropName="checked"
+                    >
+                        <Checkbox>Ventilador</Checkbox>
+                    </Form.Item>
+                    <Form.Item
+                        name="crib"
+                        valuePropName="checked"
+                    >
+                        <Checkbox>Berço</Checkbox>
+                    </Form.Item>
+                    <Flex gap={8}>
+                        <ConfigProvider
+                            button={{ className: styles.linearGradientButton }}
+                        >
+                            <Button
+                                type="primary"
+                                size="large"
+                                htmlType="submit"
+                                loading={mutation.isLoading}
                             >
-                                <Checkbox>Ar Condicionado</Checkbox>
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                name="fan"
-                                valuePropName="checked"
-                            >
-                                <Checkbox>Ventilador</Checkbox>
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                name="crib"
-                                valuePropName="checked"
-                            >
-                                <Checkbox>Berço</Checkbox>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <ConfigProvider
-                                button={{ className: styles.linearGradientButton }}
-                            >
-                                <Button
-                                    type="primary"
-                                    size="large"
-                                    htmlType="submit"
-                                    loading={mutation.isLoading}
-                                >
-                                    Cadastrar
-                                </Button>
-                            </ConfigProvider>
-                        </Col>
-                        <Col span={6}>
-                            <ConfigProvider
-                                button={{ className: styles.linearGradientButton }}
-                            >
-                                <Button
-                                    type="primary"
-                                    size="large"
-                                    onClick={() => form.resetFields()}
-                                >
-                                    Resetar
-                                </Button>
-                            </ConfigProvider>
-                        </Col>
-                    </Row>
+                                Cadastrar
+                            </Button>
+                        </ConfigProvider>
+                        <Button
+                            type="primary"
+                            danger
+                            size="large"
+                            onClick={() => form.resetFields()}
+                        >
+                            Resetar
+                        </Button>
+                    </Flex>
                 </Form>
             }
             {drawerType === "edit" && selectedRoom && (
@@ -181,14 +157,15 @@ export default function DrawerManagerRooms({ drawerOpen, drawerType, closeDrawer
                     <Form.Item name="crib" valuePropName="checked">
                         <Checkbox>Berço</Checkbox>
                     </Form.Item>
+                    <Flex gap={8}>
+                        <Button htmlType="submit" type="primary">
+                            Salvar
+                        </Button>
 
-                    <Button htmlType="submit" type="primary">
-                        Salvar
-                    </Button>
-
-                    <Button onClick={handleBack} style={{ marginLeft: 8 }}>
-                        Voltar
-                    </Button>
+                        <Button onClick={handleBack} style={{ marginLeft: 8 }}>
+                            Voltar
+                        </Button>
+                    </Flex>
                 </Form>
             )}
         </Drawer>
