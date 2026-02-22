@@ -57,15 +57,17 @@ export default function ManagerRooms() {
     const colums = [
         {
             title: "Nome",
-            dataIndex: "name"
+            dataIndex: "name",
         },
         {
             title: "Capacidade",
-            dataIndex: "guest_capacity"
+            dataIndex: "guest_capacity",
+            width: "40px",
         },
         {
             title: "Arcondicionado",
             dataIndex: "air_conditioning",
+            width: "40px",
             render: (air) => {
                 return <Tag color={air ? "green" : "red"}>{air ? "Sim" : "Não"}</Tag>
             }
@@ -73,47 +75,59 @@ export default function ManagerRooms() {
         {
             title: "Ventilador",
             dataIndex: "fan",
+            width: "40px",
             render: (fan) => {
                 return <Tag color={fan ? "green" : "red"}>{fan ? "Sim" : "Não"}</Tag>
             }
         },
         {
-            title: "Quantidade cama casal",
-            dataIndex: "double_beds"
+            title: "Qtd Cama Casal",
+            dataIndex: "double_beds",
+            width: "30px"
         },
         {
-            title: "Quantidade cama solteiro",
-            dataIndex: "single_beds"
+            title: "Qtd Cama Solteiro",
+            dataIndex: "single_beds",
+            width: "50px"
         },
         {
             title: "Ações",
             render: (_, room) => (
-                <>
-                    <div>
-                        <ConfigProvider
-                            button={{ className: styles.linearGradientButton }}
-                        >
-                            <Button
-                                type="primary"
-                                onClick={() => handleSelectRoom(room)}
-                                style={{ marginRight: 5 }}
-                            >
+                <Flex gap={8}>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSelectRoom(room)}
+                    >
+                        {
+                            isMobile ?
                                 <Tooltip title="Editar">
                                     <EditOutlined />
-                                </Tooltip>
-                            </Button>
-                        </ConfigProvider>
-                        <Button
-                            type="primary"
-                            danger
-                            onClick={() => handleDelete(room)}
-                        >
-                            <Tooltip title="Remover">
-                                <FontAwesomeIcon icon={faTrashCan} />
-                            </Tooltip>
-                        </Button>
-                    </div>
-                </>
+                                </Tooltip> :
+                                <Flex gap={4}>
+                                    <EditOutlined />
+                                    Editar
+                                </Flex>
+                        }
+
+                    </Button>
+                    <Button
+                        type="primary"
+                        danger
+                        onClick={() => handleDelete(room)}
+                    >
+                        {
+                            isMobile ?
+                                <Tooltip title="Remover">
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                </Tooltip> :
+                                <Flex gap={4} align="center">
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                    Excluir
+                                </Flex>
+                        }
+
+                    </Button>
+                </Flex>
             )
         }
     ];
@@ -198,6 +212,7 @@ export default function ManagerRooms() {
                         rowKey="id"
                         loading={isLoading}
                         columns={colums}
+                        scroll={{ x: 'auto' }}
                     />
                 </div>
             </div>

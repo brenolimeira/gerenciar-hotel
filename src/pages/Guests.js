@@ -10,7 +10,7 @@ import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPersonCirclePlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
-const {useBreakpoint} = Grid;
+const { useBreakpoint } = Grid;
 
 export default function Guests() {
 
@@ -18,7 +18,7 @@ export default function Guests() {
     const [drawerType, setDrawerType] = useState(null);
     const [search, setSearch] = useState("");
     const [selectedGuest, setSelectedGuest] = useState(null);
-    const screens  = useBreakpoint();
+    const screens = useBreakpoint();
     const isMobile = !screens.md;
 
     const [form] = Form.useForm();
@@ -100,28 +100,25 @@ export default function Guests() {
     };
 
     const columns = [
-        { title: 'Nome', dataIndex: 'name', key: 'name', responsive: ['xs', 'sm', 'md', 'lg', 'xl'] },
+        { title: 'Nome', dataIndex: 'name', key: 'name', },
         {
             title: 'CPF',
             dataIndex: 'cpf',
             key: 'cpf',
             render: (cpf) => formatCPF(cpf),
-            responsive: ['xs', 'sm', 'md', 'lg', 'xl']
         },
-        { title: 'RG', dataIndex: 'rg', key: 'rg', responsive: ['lg', 'xl'] },
+        { title: 'RG', dataIndex: 'rg', key: 'rg' },
         {
             title: 'Data de Nascimento',
             dataIndex: 'birth_date',
             key: 'birth_date',
             render: (value) => value ? dayjs(value).format("DD/MM/YYYY") : "",
-            responsive: ['md', 'lg', 'xl']
         },
         {
             title: 'Telefone',
             dataIndex: 'phone',
             key: 'phone',
             render: (phone) => formatPhone(phone),
-            responsive: ['md', 'lg', 'xl']
         },
         {
             title: 'Ações',
@@ -137,16 +134,30 @@ export default function Guests() {
                             type="primary"
                             onClick={() => handleSelectGuest(guest)}
                         >
-                            <Tooltip title="Editar">
-                                <EditOutlined />
-                            </Tooltip>
+                            {
+                                isMobile ?
+                                    <Tooltip title="Editar">
+                                        <EditOutlined />
+                                    </Tooltip> :
+                                    <Flex gap={4}>
+                                        <EditOutlined />
+                                        Editar
+                                    </Flex>
+                            }
                         </Button>
                     </ConfigProvider>
 
                     <Button type="primary" danger onClick={() => handleDelete(guest)} style={{ marginLeft: 4 }}>
-                        <Tooltip title="Remover">   
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </Tooltip>
+                        {
+                            isMobile ?
+                                <Tooltip title="Remover">
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                </Tooltip> :
+                                <Flex gap={4} align="center">
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                    Excluir
+                                </Flex>
+                        }
                     </Button>
                 </Flex>
             )
@@ -183,7 +194,7 @@ export default function Guests() {
                             type="primary"
                             onClick={() => openDrawer("create")}
                         >
-                            {isMobile ? <FontAwesomeIcon icon={faPersonCirclePlus} /> : <Flex gap={8}><PlusOutlined/> Cadastrar Hóspede </Flex>}
+                            {isMobile ? <FontAwesomeIcon icon={faPersonCirclePlus} /> : <Flex gap={8}><PlusOutlined /> Cadastrar Hóspede </Flex>}
                         </Button>
                     </ConfigProvider>
                 </Space>
@@ -191,7 +202,7 @@ export default function Guests() {
                     columns={columns}
                     dataSource={filteredGuests}
                     rowKey="id"
-                    scroll={{ x: true, y: "70vh" }}
+                    scroll={{ x: true }}
                     pagination={{ responsive: true }}
                     size="middle"
                     style={{ width: "100%" }}

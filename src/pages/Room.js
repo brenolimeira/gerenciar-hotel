@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
-import { Table, Tag, Button, Popconfirm, Space, Empty, Spin } from 'antd'
-import { CheckOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, Popconfirm, Space, Empty, Spin, Grid, Flex, Tooltip, Modal } from 'antd'
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useButtonStyles } from "../styles/useButtonStyles";
 import { useEffect, useState } from 'react';
 
@@ -8,34 +8,45 @@ import dayjs from 'dayjs';
 import "dayjs/locale/pt-br";
 
 import api from '../service';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightFromBracket, faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 dayjs.locale("pt-br");
+
+const { useBreakpoint } = Grid;
 
 export default function Room() {
 
     const { number } = useParams();
 
     const [booking, setBooking] = useState([]);
-    // const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingBtn, setLoadingBtn] = useState(null);
     const { styles } = useButtonStyles();
+    const screen = useBreakpoint();
+    const isMobile = !screen.md;
+
+
+    const fetchBookings = async () => {
+        try {
+            setLoading(true);
+
+            const res = await api.get(
+                `/api/bookings/?room=${number}&status=active,reserved`
+            );
+            setBooking(res.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        setLoading(true);
-        api.get(`/api/bookings/?room=${number}&status=active,reserved`)
-            .then(res => {
-                setBooking(res.data);
-            })
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
-    }, [number]);
+        fetchBookings();
+    }, [number])
 
-    // useEffect(() => {
-    //     if (booking) {
-    //         setGuests(booking.flatMap(b => b.guest));
-    //     }
-    // }, [booking])
+    const hasActiveBooking = booking.some(b => b.status === "active");
 
     const expandColumns = [
         { title: 'Nome do Hóspede', dataIndex: 'name', key: 'name' },
@@ -97,32 +108,46 @@ export default function Room() {
             title: 'Ações',
             key: 'actions',
             render: (_, record) => (
-                <Space>
+                <Flex wrap justify='center' align='center' gap={8}>
 
-                    {record.status === "reserved" && record.status === "active" && (
-                        <Popconfirm
-                            title="Confirmar check-in?"
-                            onConfirm={() => handleCheckin(record.id)}
+                    {record.status === "reserved" && !hasActiveBooking && (
+                        <Button
+                            type="primary"
+                            className={styles.accentButton}
+                            onClick={() => handleCheck(record.id)}
                         >
-                            <Button
-                                type="primary"
-                                icon={<CheckOutlined />}
-                                className={styles.accentButton}
-                            >
-                                Check-in
-                            </Button>
-                        </Popconfirm>
+                            {
+                                isMobile ?
+                                    <Tooltip title="Check-in">
+                                        <FontAwesomeIcon icon={faArrowRightToBracket} style={{ fontSize: 12 }} />
+                                    </Tooltip>
+                                    :
+                                    <Flex gap={4} align='center'>
+                                        <FontAwesomeIcon icon={faArrowRightToBracket} style={{ fontSize: 12 }} />
+                                        Check-in
+                                    </Flex>
+                            }
+                        </Button>
                     )}
 
                     {record.status === "active" && (
                         <Button
                             type="primary"
-                            icon={<CheckOutlined />}
                             className={styles.primaryButton}
                             loading={loadingBtn === record.id}
                             onClick={() => handleCheckout(record.id)}
                         >
-                            Checkout
+                            {
+                                isMobile ?
+                                    <Tooltip title="Check-out">
+                                        <FontAwesomeIcon icon={faArrowRightFromBracket} style={{ fontSize: 12 }} />
+                                    </Tooltip>
+                                    :
+                                    <Flex gap={4} align='center'>
+                                        <FontAwesomeIcon icon={faArrowRightFromBracket} style={{ fontSize: 12 }} />
+                                        Check-out
+                                    </Flex>
+                            }
                         </Button>
                     )}
 
@@ -132,11 +157,21 @@ export default function Room() {
                             className={styles.dangerButton}
                             onClick={() => handleCancel(record.id)}
                         >
-                            Cancelar
+                            {
+                                isMobile ?
+                                    <Tooltip title="Cancelar">
+                                        <CloseOutlined />
+                                    </Tooltip>
+                                    :
+                                    <Flex gap={4} align="center">
+                                        <CloseOutlined />
+                                        Cancelar
+                                    </Flex>
+                            }
                         </Button>
                     )}
 
-                </Space>
+                </Flex>
             )
         },
     ];
@@ -146,6 +181,7 @@ export default function Room() {
             setLoadingBtn(id);
             const res = await api.post(`/api/bookings/${id}/checkout/`);
             const updatedBooking = res.data;
+            await fetchBookings();
             setBooking(prev =>
                 prev.map(b =>
                     b.id === id ? updatedBooking : b
@@ -167,6 +203,18 @@ export default function Room() {
         } catch {
             alert("Erro ao realizar check-in");
         }
+    };
+
+    const handleCheck = (id) => {
+        Modal.confirm({
+            title: "Realizar Check-in?",
+            content: `Você tem certeza que deseja realizar o Check-in?`,
+            okText: "Sim",
+            cancelText: "Cancelar",
+            okType: "primary",
+
+            onOk: () => handleCheckin(id),
+        });
     };
 
     const handleCancel = async (id) => {
@@ -200,7 +248,7 @@ export default function Room() {
     if (loading) {
         return (
             <div style={{
-                flex:1,
+                flex: 1,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center"
@@ -209,8 +257,6 @@ export default function Room() {
             </div>
         );
     }
-
-    // const activeBookings = booking?.filter(b => b.status === "active") || [];
 
     return (
         <>
@@ -227,6 +273,7 @@ export default function Room() {
                         <Table
                             sticky
                             bordered={false}
+                            scroll={{ x: 'auto' }}
                             rowClassName={() => "table-row"}
                             columns={columns}
                             expandable={{
@@ -251,19 +298,10 @@ export default function Room() {
                             pagination
                             style={{ flex: 1 }}
                         />
-                        {/* <ConfigProvider
-                            button={{
-                                className: styles.linearGradientButton
-                            }}
-                        >
-                            <Button type='primary' size='large' icon={<CheckOutlined />} onClick={() => handleCheckout(booki.id)}>
-                                Realizar Check out
-                            </Button>
-                        </ConfigProvider> */}
                     </div>
                 )
                 : (
-                    <div style={{ flex:1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <Empty description="Quarto sem Reservas" />
                     </div>
                 )}
