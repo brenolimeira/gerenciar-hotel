@@ -166,32 +166,33 @@ function Home() {
                 {filteredRooms ? filteredRooms.map((room, index) => {
                     return (
                         //<AnimatedWrapper style={{ animationDelay: `${index * 0.07}s` }} key={room.id}>
-                        <StyledCard key={room.id}
-                            title={
-                                <Flex gap={24} align="center" justify="space-between">
-                                    <NavLink
-                                        key={room.id}
-                                        to={`/room/${room.id}`}
-                                        style={{ textDecoration: "none" }}
-                                    >
+                        <NavLink
+                            key={room.id}
+                            to={`/room/${room.id}`}
+                            style={{ textDecoration: "none" }}
+                        >
+                            <StyledCard key={room.id}
+                                title={
+                                    <Flex gap={24} align="center" justify="space-between">
                                         <Typography.Title level={3}>
                                             <Flex gap={24} align='center' justify='space-between'>
                                                 {room.name}
                                             </Flex>
                                         </Typography.Title>
-                                    </NavLink>
-                                </Flex>
-                            }
-                            variant="borderless"
-                            style={{ minHeight: 140, animationDelay: `${index * 0.07}s` }}
-                        >
-                            {room.air_conditioning && <p><FontAwesomeIcon icon={faWind} /> Ar Condicionado</p>}
-                            {room.crib && <p><FontAwesomeIcon icon={faBabyCarriage} /> Berço</p>}
-                            {room.fan && <p> <FontAwesomeIcon icon={faFan} /> Ventilador</p>}
-                            {room.guest_capacity && <p><FontAwesomeIcon icon={faPeopleRoof} /> Capacidade Total - {room.guest_capacity} pessoas </p>}
-                            {room.double_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de casal - {room.double_beds} </p>}
-                            {room.single_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de solteiro - {room.single_beds} </p>}
-                        </StyledCard>
+
+                                    </Flex>
+                                }
+                                variant="borderless"
+                                style={{ minHeight: 140, animationDelay: `${index * 0.07}s` }}
+                            >
+                                {room.air_conditioning && <p><FontAwesomeIcon icon={faWind} /> Ar Condicionado</p>}
+                                {room.crib && <p><FontAwesomeIcon icon={faBabyCarriage} /> Berço</p>}
+                                {room.fan && <p> <FontAwesomeIcon icon={faFan} /> Ventilador</p>}
+                                {room.guest_capacity && <p><FontAwesomeIcon icon={faPeopleRoof} /> Capacidade Total - {room.guest_capacity} pessoas </p>}
+                                {room.double_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de casal - {room.double_beds} </p>}
+                                {room.single_beds !== 0 && <p><FontAwesomeIcon icon={faBed} /> Camas de solteiro - {room.single_beds} </p>}
+                            </StyledCard>
+                        </NavLink>
                         //</AnimatedWrapper>
                     )
                 }) : []}
