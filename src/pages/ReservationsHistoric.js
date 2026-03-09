@@ -104,6 +104,7 @@ export default function ReservationsHistoric() {
                     <Table
                         loading={loading}
                         columns={columns}
+                        scroll={{ x: "max-content" }}
                         expandable={{
                             expandedRowRender,
                             defaultExpandAllRows: false

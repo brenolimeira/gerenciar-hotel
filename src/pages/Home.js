@@ -17,8 +17,7 @@ const StyledDiv = styled.div`
     min-width:0;
 
     display:grid;
-    grid-template-columns:repeat(auto-fill,260px);
-    justify-content:start;
+    grid-template-columns:repeat(auto-fill,minmax(260px, 1fr));
 
     gap:24px;
     padding:24px;
@@ -41,7 +40,7 @@ const StyledCard = styled(Card)`
   cursor:pointer;
 
   height:220px; /* altura padrão fixa */
-  width:260px;
+  /* width: 260px; */
 
   display:flex;
   flex-direction:column;
@@ -73,26 +72,26 @@ const StyledCard = styled(Card)`
   }
 `;
 
-const AnimatedWrapper = styled.div`
+// const AnimatedWrapper = styled.div`
 
-    width:100%;
-    min-width:0;
-    display:contents;
+//     width:100%;
+//     min-width:0;
+//     display:contents;
 
-    animation: fadeUp .5s ease forwards;
-    opacity:0;
+//     animation: fadeUp .5s ease forwards;
+//     opacity:0;
 
-    @keyframes fadeUp{
-        from{
-            transform:translateY(20px);
-            opacity:0;
-        }
-        to{
-            transform:translateY(0);
-            opacity:1;
-        }
-    }
-`;
+//     @keyframes fadeUp{
+//         from{
+//             transform:translateY(20px);
+//             opacity:0;
+//         }
+//         to{
+//             transform:translateY(0);
+//             opacity:1;
+//         }
+//     }
+// `;
 
 function Home() {
 

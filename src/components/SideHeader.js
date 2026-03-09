@@ -1,11 +1,22 @@
-import { Button, Flex } from 'antd';
+import { Button, Flex, Grid } from 'antd';
 import ThemeSwitcher from './ThemeSwitcher';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
 
+const { useBreakpoint } = Grid;
+
 function SideHeader({ collapsed, setCollapsed }) {
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.href = "/auth/login";
+    }
+
+    const screens = useBreakpoint();
+    const isMobile = !screens.md;
 
     return (
         <Flex align="center" justify="space-between" style={{ width: '100%' }}>
@@ -19,7 +30,27 @@ function SideHeader({ collapsed, setCollapsed }) {
                     height: 64,
                 }}
             />
-            <ThemeSwitcher />
+            <Flex align="center" gap={10}>
+                <ThemeSwitcher />
+                {isMobile ? (
+                    <Button
+                    danger
+                    icon={<LogoutOutlined />}
+                    style={{ marginRight: 4 }}
+                    onClick={handleLogout}
+                >
+                </Button>
+                ) : (
+                    <Button
+                        danger
+                        icon={<LogoutOutlined />}
+                        style={{ marginRight: 4 }}
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
+                )}
+            </Flex>
         </Flex>
     );
 }
