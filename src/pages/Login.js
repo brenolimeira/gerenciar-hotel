@@ -1,9 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { Form, Button, Input, message, Flex, Card, Image, Grid } from "antd";
+import { Form, Button, Input, message, Flex, Card, Image, Grid, Typography } from "antd";
 import api from "../service";
 import { useTheme } from "../context/useTheme";
 import { Link } from "react-router-dom";
 import hotelImage from "../assets/hotel-login2.jpg";
+
+const { Text } = Typography;
 
 const { useBreakpoint } = Grid;
 
@@ -50,25 +52,30 @@ export default function Login() {
                             layout="vertical"
                             form={form}
                             onFinish={onFinish}
+                            initialValues={{
+                                username: "admin",
+                                password: "admin"
+                            }}
                         >
                             <Form.Item label="Login" name="username" rules={[{ required: true, message: "Informe o nome" }]}>
                                 <Input style={{ width: '100%' }} />
                             </Form.Item>
-                            <Form.Item label="Senha" name="password" rules={[{ required: true, message: "Informe a senha" }]}>
+                            <Form.Item label="Senha"
+                                name="password"
+                                rules={[{ required: true, message: "Informe a senha" }]}
+                            >
                                 <Input.Password style={{ width: '100%' }} visibilityToggle />
                             </Form.Item>
-                            <Flex vertical>
-                                <Link to="/auth/register">Deseja se cadastrar?</Link>
-                                <Link to="">Esqueci minha senha</Link>
+                            <Flex justify="center" style={{ marginTop: -10, marginBottom: 10 }}>
+                                <Link to="/auth/forgot-password">Esqueceu a senha?</Link>
                             </Flex>
-
-                            <Flex justify="end">
-                                <Button htmlType="submit" type="primary">
+                            <Flex justify="center">
+                                <Text type="secondary" style={{ marginRight: 4 }}>Ainda nao tem uma conta?</Text><Link to="/auth/register">Criar conta</Link>
+                            </Flex>
+                            {/* <Link to="">Esqueceu a senha?</Link> */}
+                            <Flex justify="center" style={{ marginTop: 4 }}>
+                                <Button htmlType="submit" type="primary" style={{ width: "100%" }}>
                                     Entrar
-                                </Button>
-
-                                <Button type="primary" danger onClick={() => form.resetFields()} style={{ marginLeft: 8 }}>
-                                    Resetar
                                 </Button>
                             </Flex>
                         </Form>
